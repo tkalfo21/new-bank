@@ -17,7 +17,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Domänenklassen ({@link Bank}, {@link AccountFactory}, …) sind bewusst
  * <em>keine</em> Spring-Beans — sie bleiben reines OO-Design. Der Service-Layer,
  * der sie zu Beans macht, entsteht in Sprint 6 (siehe
- * {@code docs/exercises/01-Exercise-build-the-be.md}).
+ * {@code docs/exercises/10-Exercise-build-the-be.md}).
  * </p>
  *
  * @author Luigi Cavuoti

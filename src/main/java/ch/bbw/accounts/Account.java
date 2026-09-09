@@ -40,7 +40,7 @@ public abstract class Account {
     }
 
     /**
-     * Gibt die Kontonummer zur�ck.
+     * Gibt die Kontonummer zurück.
      *
      * @return die Kontonummer
      */

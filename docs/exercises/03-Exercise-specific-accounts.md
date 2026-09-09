@@ -1,4 +1,4 @@
-# Exercise 03 — Specific Accounts (Inheritance)
+ # Exercise 03 — Specific Accounts (Inheritance)
 
 > **Sprint 3** of `start.md`. Builds on Exercise 02. Numbering note:
 > `01-Exercise-build-the-be.md` (Spring Boot) comes *after* 02–05.

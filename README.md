@@ -101,7 +101,7 @@ Read `docs/exercises/start.md` first — it lists the full sequence. The briefs:
 | 3 | [`03-Exercise-specific-accounts.md`](docs/exercises/03-Exercise-specific-accounts.md) | Inheritance: `SalaryAccount`, `PromoYouthSavingsAccount` |
 | 4 | [`04-Exercise-factory-pattern.md`](docs/exercises/04-Exercise-factory-pattern.md) | Factory pattern |
 | 5 | [`05-Exercise-singleton-pattern.md`](docs/exercises/05-Exercise-singleton-pattern.md) | Singleton pattern + its trade-offs |
-| 6–11 | [`01-Exercise-build-the-be.md`](docs/exercises/01-Exercise-build-the-be.md) | Spring Boot REST backend |
+| 6–11 | [`01-Exercise-build-the-be.md`](docs/exercises/10-Exercise-build-the-be.md) | Spring Boot REST backend |
 
 > **Note on numbering:** `01-Exercise-build-the-be.md` is the Spring Boot extension and belongs at
 > the **end**, after sprints 2–5. It is numbered `01` for historical reasons.
