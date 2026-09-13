@@ -7,6 +7,12 @@ At the moment, the model includes:
 - `Bank`
 - `Account`
 
+> Before starting a sprint, read its requirement scenario PDF in
+> [`docs/scenarios/`](../scenarios/01_UML_Bank2.pdf) and draft your own use-case from it — see
+> [README: Scenarios](../../README.md#scenarios-from-requirement-to-use-case-to-code) for the
+> PDF-to-sprint mapping and workflow. The tasks below are the distilled version; the scenario is
+> the raw requirement.
+
 ## Suggested Sprint Sequence
 
 1. **Sprint 1 (Baseline)**  
