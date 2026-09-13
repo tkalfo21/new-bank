@@ -4,6 +4,7 @@ import ch.bbw.Booking;
 import ch.bbw.Scheduled;
 import ch.bbw.exceptions.InvalidAmountException;
 import ch.bbw.exceptions.InvalidDateException;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
  * @author Luigi Cavuoti, lro@gmx.ch
  * @version 2.1
  */
+@Getter
 public abstract class Account {
     /**
      * Die Kontonummer (kann auch Buchstaben und Sonderzeichen enthalten).
@@ -39,23 +41,6 @@ public abstract class Account {
         this.bookings = new ArrayList<Booking>();
     }
 
-    /**
-     * Gibt die Kontonummer zurück.
-     *
-     * @return die Kontonummer
-     */
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * Gibt das Saldo zur�ck.
-     *
-     * @return Saldo
-     */
-    public long getBalance() {
-        return balance;
-    }
 
     /**
      * Checks if the transaction date is not in the past.
