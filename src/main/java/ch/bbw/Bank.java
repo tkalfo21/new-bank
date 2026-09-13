@@ -3,7 +3,6 @@ package ch.bbw;
 
 import ch.bbw.accounts.Account;
 import ch.bbw.exceptions.*;
-import lombok.Getter;
 
 
 import java.util.Comparator;
@@ -17,7 +16,6 @@ import java.util.TreeMap;
  * @author luigicavuoti, lro@gmx.ch
  * @version 2.1
  */
-@Getter
 public class Bank {
     /**
      * Liste aller Konti.

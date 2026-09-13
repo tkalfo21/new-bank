@@ -4,7 +4,6 @@ package ch.bbw.accounts;
 import ch.bbw.Scheduled;
 import ch.bbw.exceptions.InvalidAmountException;
 import ch.bbw.exceptions.InvalidDateException;
-import lombok.Getter;
 
 /**
  * Sparkonto.
@@ -12,7 +11,6 @@ import lombok.Getter;
  * @author Luigi Cavuoti, lro@gmx.ch
  * @version 1.1
  */
-@Getter
 public class SavingsAccount extends Account
 {
 	/**
