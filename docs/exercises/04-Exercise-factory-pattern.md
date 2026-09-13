@@ -50,15 +50,44 @@ accepted and silently dropped.
 
 After Exercise 03 the right classes exist, so this is now fixable.
 
+## Work test-first (TDD)
+
+Task 1 is a regression test for the exact bug shown above (`createSalaryAccount` silently dropping
+`creditLimit`) plus the contract the rest of the factory must hold.
+
+1. Write the `instanceof`/prefix/uniqueness tests from Task 1 first, against the **current**, still
+   broken `AccountFactory`.
+2. Run `./mvnw test` and watch the `createSalaryAccount`/`createPromoYouthSavingsAccount` tests fail
+   — that failure *is* the bug from "What is broken" above, now pinned down in a test instead of just
+   described in prose.
+3. Fix one method at a time (Task 2) until its test goes green, then move on to `AccountType` (Task
+   3) and the rest.
+
 ## Tasks
 
-### 1. Fix the three creation methods
+### 1. Tests
+
+Add `src/test/java/ch/bbw/AccountFactoryTests.java`:
+
+- each `create…()` returns an instance of the **expected concrete class** (this is one of the few
+  legitimate uses of `instanceof` — you are testing the factory's contract);
+- each id starts with the expected prefix;
+- ids are unique over e.g. 1000 creations;
+- `createSalaryAccount(-50_000)` produces an account whose credit limit is actually `-50_000`
+  (the regression test for the discarded-parameter bug);
+- `createSalaryAccount(+50_000)` is rejected.
+
+Also implement the `testCreate()` stub in `src/test/java/BankTests.java`: create two savings
+accounts through `Bank` and assert that both ids are non-null, different, and resolvable via
+`Bank.getAccount(id)`.
+
+### 2. Fix the three creation methods
 
 Return the correct subtype from each method, and pass `creditLimit` into the `SalaryAccount`
 constructor. This is a small change — but note that it was **only possible in one file**. That is
 the payoff of having a factory at all: `Bank` needed no edit.
 
-### 2. Introduce an `AccountType`
+### 3. Introduce an `AccountType`
 
 Replace the three ad-hoc prefixes with an enum that keeps the type and its prefix together:
 
@@ -73,7 +102,7 @@ public enum AccountType {
 
 Now the prefix cannot drift away from the type, and you can iterate over all products.
 
-### 3. Simple factory vs. factory method
+### 4. Simple factory vs. factory method
 
 Add a single dispatching entry point next to (or instead of) the three methods:
 
@@ -92,7 +121,7 @@ This is the difference between a **simple factory** (one class with a `switch`, 
 and the **Factory Method pattern** (each product has its own creator subclass). Note which one this
 exercise actually implements.
 
-### 4. Make id generation robust
+### 5. Make id generation robust
 
 The counter is the factory's second responsibility. Tighten it:
 
@@ -103,29 +132,13 @@ The counter is the factory's second responsibility. Tighten it:
   (`S-1000`, `Y-1000`, `P-1000`)? Both are defensible — pick one and state why.
 - Add a test that ids are unique across many creations.
 
-### 5. Keep the factory the only place that says `new`
+### 6. Keep the factory the only place that says `new`
 
 Grep the project: `new SavingsAccount(`, `new SalaryAccount(`, `new PromoYouthSavingsAccount(` must
 appear only inside `AccountFactory` (and in tests, where constructing a subtype directly is fine).
 
 `Bank` must not construct accounts, and must not import `ch.bbw.accounts.SavingsAccount` at all —
 only the abstract `ch.bbw.accounts.Account`.
-
-### 6. Tests
-
-Add `src/test/java/ch/bbw/AccountFactoryTests.java`:
-
-- each `create…()` returns an instance of the **expected concrete class** (this is one of the few
-  legitimate uses of `instanceof` — you are testing the factory's contract);
-- each id starts with the expected prefix;
-- ids are unique over e.g. 1000 creations;
-- `createSalaryAccount(-50_000)` produces an account whose credit limit is actually `-50_000`
-  (the regression test for the discarded-parameter bug);
-- `createSalaryAccount(+50_000)` is rejected.
-
-Also implement the `testCreate()` stub in `src/test/java/BankTests.java`: create two savings
-accounts through `Bank` and assert that both ids are non-null, different, and resolvable via
-`Bank.getAccount(id)`.
 
 ## Discussion questions
 

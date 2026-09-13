@@ -41,70 +41,25 @@ Read these files before you start:
    (bank days since 1970), but `Account` actually stores `date.toUnix()`, which is **epoch
    milliseconds**. One of the two has to give.
 
+## Work test-first (TDD)
+
+Task 1 below *is* the test suite for this exercise — it describes the target API (`Booking(date,
+amount, text)`, `Account.getBookings()`, a derived `getBalance()`) before any of it exists in the
+code. Write those tests first:
+
+1. Write (or extend) a test for one piece of behaviour from the list in Task 1.
+2. Run `./mvnw test` and confirm it fails — for the right reason (assertion failure, or the code
+   doesn't compile yet because the API doesn't exist). This is the **red** step; don't skip it, it's
+   how you know the test actually tests something.
+3. Implement just enough of Tasks 2–7 to make that test pass (**green**).
+4. Refactor if needed, keeping all tests green, then move to the next piece of behaviour.
+
+Do not write `Booking`'s new constructor, `getBookings()`, or the derived `getBalance()` before a
+failing test demands them.
+
 ## Tasks
 
-### 1. Add a text to `Booking`
-
-Extend the record to `Booking(long date, long amount, String text)`.
-
-While you are in the file: the record currently declares an empty compact constructor and manually
-overrides `date()` and `amount()` with bodies that just return the field. A record generates both
-for you. Delete the redundant code and keep the Javadoc.
-
-Decide what happens when `text` is `null` or blank — reject it in the compact constructor, or
-default it to something like `"Einzahlung"` / `"Auszahlung"`. Write down your choice.
-
-### 2. Thread the text through `Account` and `Bank`
-
-`Account.deposit(...)` / `withdraw(...)` and the corresponding `Bank` methods need to accept a text
-and pass it on. Keep the existing two-argument signatures as convenience overloads that supply a
-default text, so you do not have to touch every call site at once.
-
-### 3. Expose the booking history
-
-Add `List<Booking> getBookings()` to `Account`.
-
-Return an **unmodifiable view** (`List.copyOf(...)` or `Collections.unmodifiableList(...)`), not the
-internal list. If you hand out the real list, any caller can add a booking behind the account's back
-— which is exactly the invariant you are about to establish in task 4.
-
-### 4. Derive the balance from the bookings
-
-Remove the `balance` field. Reimplement:
-
-```java
-public long getBalance() {
-    return bookings.stream()
-                   .mapToLong(Booking::amount)
-                   .sum();
-}
-```
-
-Now there is exactly one source of truth. `deposit()` and `withdraw()` still need to return the new
-balance — have them append the booking and then return `getBalance()`.
-
-Watch out for `SavingsAccount.withdraw(...)`: it calls `getBalance()` *before* delegating to
-`super.withdraw(...)`. Verify that overdraft protection still behaves correctly after the change.
-
-### 5. Fix the date semantics
-
-Pick one and make code and Javadoc agree:
-
-- **Option A (recommended):** the booking date is a **Unix timestamp in milliseconds**. Update
-  `Booking`'s Javadoc to say so.
-- **Option B:** the booking date really is *bank days since 1.1.1970*. Then `Account` must convert
-  (`toUnix() / 86_400_000`) before constructing the `Booking`, and you lose the time of day.
-
-### 6. Print a statement
-
-Add a method that renders the booking history as a readable account statement — for example
-`String printStatement()` on `Account`, one line per booking with date, amount and text, plus the
-closing balance.
-
-Format amounts for humans: the domain stores **Millirappen**, so `123_456` is `CHF 1.23456`. Decide
-where that formatting belongs (hint: not inside `Booking`).
-
-### 7. Tests
+### 1. Tests
 
 Implement the stubs that currently just call `fail("ToDo")`:
 
@@ -124,6 +79,70 @@ At minimum cover:
   unchanged.
 
 That last one matters: make sure the exception is thrown *before* the booking is appended.
+
+Yes, most of these will fail to even compile at first — `Booking` doesn't take a `text` yet and
+`getBookings()` doesn't exist. That's the point: the test names the API you're about to build.
+
+### 2. Add a text to `Booking`
+
+Extend the record to `Booking(long date, long amount, String text)`.
+
+While you are in the file: the record currently declares an empty compact constructor and manually
+overrides `date()` and `amount()` with bodies that just return the field. A record generates both
+for you. Delete the redundant code and keep the Javadoc.
+
+Decide what happens when `text` is `null` or blank — reject it in the compact constructor, or
+default it to something like `"Einzahlung"` / `"Auszahlung"`. Write down your choice.
+
+### 3. Thread the text through `Account` and `Bank`
+
+`Account.deposit(...)` / `withdraw(...)` and the corresponding `Bank` methods need to accept a text
+and pass it on. Keep the existing two-argument signatures as convenience overloads that supply a
+default text, so you do not have to touch every call site at once.
+
+### 4. Expose the booking history
+
+Add `List<Booking> getBookings()` to `Account`.
+
+Return an **unmodifiable view** (`List.copyOf(...)` or `Collections.unmodifiableList(...)`), not the
+internal list. If you hand out the real list, any caller can add a booking behind the account's back
+— which is exactly the invariant you are about to establish in task 5.
+
+### 5. Derive the balance from the bookings
+
+Remove the `balance` field. Reimplement:
+
+```java
+public long getBalance() {
+    return bookings.stream()
+                   .mapToLong(Booking::amount)
+                   .sum();
+}
+```
+
+Now there is exactly one source of truth. `deposit()` and `withdraw()` still need to return the new
+balance — have them append the booking and then return `getBalance()`.
+
+Watch out for `SavingsAccount.withdraw(...)`: it calls `getBalance()` *before* delegating to
+`super.withdraw(...)`. Verify that overdraft protection still behaves correctly after the change.
+
+### 6. Fix the date semantics
+
+Pick one and make code and Javadoc agree:
+
+- **Option A (recommended):** the booking date is a **Unix timestamp in milliseconds**. Update
+  `Booking`'s Javadoc to say so.
+- **Option B:** the booking date really is *bank days since 1.1.1970*. Then `Account` must convert
+  (`toUnix() / 86_400_000`) before constructing the `Booking`, and you lose the time of day.
+
+### 7. Print a statement
+
+Add a method that renders the booking history as a readable account statement — for example
+`String printStatement()` on `Account`, one line per booking with date, amount and text, plus the
+closing balance.
+
+Format amounts for humans: the domain stores **Millirappen**, so `123_456` is `CHF 1.23456`. Decide
+where that formatting belongs (hint: not inside `Booking`).
 
 ## Discussion questions
 

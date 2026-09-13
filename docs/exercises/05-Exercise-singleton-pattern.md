@@ -29,9 +29,30 @@ Read before you start:
 That last point is the whole exercise in miniature: the moment `Bank` becomes a singleton, "fresh,
 empty state" stops being free.
 
+## Work test-first (TDD)
+
+Task 1's identity and reflection tests are written against the **current** `Bank` — they fail
+immediately (red), because `getInstance()` doesn't exist yet and the constructor is still public.
+Write them first, then do just enough of Task 2 to turn them green.
+
+The isolation test in Task 1 is a special case: it may *pass trivially* before Task 2, because every
+test today gets its own fresh `new Bank()`. That's fine — keep it. It turns into a real (red) test
+the moment the singleton lands in Task 2, which is exactly what Task 4 asks you to fix. TDD doesn't
+always mean "red before any code exists" — sometimes a test only starts earning its keep once a
+later change would otherwise break it silently.
+
 ## Tasks
 
-### 1. Make `Bank` a singleton
+### 1. Tests
+
+- Assert that `Bank.getInstance() == Bank.getInstance()` (identity, use `assertSame`).
+- Assert the constructor is not publicly accessible — e.g. via reflection,
+  `Bank.class.getConstructor()` should throw `NoSuchMethodException`.
+- Verify state isolation between tests works (deposit in one test, assert a zero balance in another,
+  and make sure the order does not matter).
+- Keep all of Exercises 02–04's tests green.
+
+### 2. Make `Bank` a singleton
 
 Convert `Bank`:
 
@@ -39,7 +60,7 @@ Convert `Bank`:
 - add a `public static Bank getInstance()`;
 - update every call site (`new Bank()` → `Bank.getInstance()`).
 
-### 2. Compare three implementations
+### 3. Compare three implementations
 
 Write all three (in scratch files or as comments) before you commit to one:
 
@@ -76,7 +97,7 @@ what the JVM is allowed to do that breaks it.
 
 Pick (c) or (a) and justify the choice in a comment.
 
-### 3. Feel the pain in the tests
+### 4. Feel the pain in the tests
 
 Run `./mvnw test`. Tests that were independent are now sharing one mutable bank, and results may
 depend on execution order.
@@ -90,7 +111,7 @@ Fix it, and be honest about what the fix is:
 
 Also check: does JUnit run your test classes in parallel? If not today, what would break if it did?
 
-### 4. Question whether `Bank` should be a singleton at all
+### 5. Question whether `Bank` should be a singleton at all
 
 Argue both sides, in writing, in the class Javadoc:
 
@@ -109,7 +130,7 @@ every layer; the account id counter must not be duplicated.
   bank" is a fact about the world; "there is one `Bank` object reachable from a static field" is a
   much stronger claim.
 
-### 5. Implement the counter-proposal too
+### 6. Implement the counter-proposal too
 
 Keep the singleton, but stop *depending* on it:
 
@@ -122,15 +143,6 @@ Keep the singleton, but stop *depending* on it:
 
 This is the *composition root* idea, and it is exactly what Spring will do for you in Exercise 01.
 
-### 6. Tests
-
-- Assert that `Bank.getInstance() == Bank.getInstance()` (identity, use `assertSame`).
-- Assert the constructor is not publicly accessible — e.g. via reflection,
-  `Bank.class.getConstructor()` should throw `NoSuchMethodException`.
-- Verify state isolation between tests works (deposit in one test, assert a zero balance in another,
-  and make sure the order does not matter).
-- Keep all of Exercises 02–04's tests green.
-
 ## Discussion questions
 
 - Is a singleton the same thing as a static utility class? What can `Bank.getInstance()` do that a
@@ -141,7 +153,7 @@ This is the *composition root* idea, and it is exactly what Spring will do for y
 - The singleton's instance is per **JVM**, not per application. What happens to "there is only one
   bank" when you run two instances of the service behind a load balancer?
 - Preview of Sprint 12: a Spring `@Service` bean is also a singleton — one instance per application
-  context. How is that *different* from `Bank.getInstance()`? Which of the four objections in task 4
+  context. How is that *different* from `Bank.getInstance()`? Which of the four objections in task 5
   does Spring's version actually solve?
 
 ## Out of scope for this exercise

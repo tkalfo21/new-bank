@@ -45,9 +45,41 @@ Read before you start:
 > The wiring in `AccountFactory` is deliberately **not** part of this exercise — you will fix that in
 > Exercise 04. Here you build the types; there you build the creation.
 
+## Work test-first (TDD)
+
+Task 1 below asks you to write the tests for `SalaryAccount` and `PromoYouthSavingsAccount` — classes
+that do not exist yet. That's intentional:
+
+1. Write one test for one boundary described in Task 1 (e.g. "withdrawing down to exactly
+   `creditLimit` succeeds").
+2. Run `./mvnw test`. It should fail to compile, because `SalaryAccount` doesn't exist. That's a
+   valid **red** — it tells you exactly what type and constructor signature to create next.
+3. Write the smallest amount of Task 2/3's design that makes the test compile and pass
+   (**green**) — not the whole class, just enough for this one test.
+4. Repeat for the next boundary, refactoring as the class fills in.
+
+Resist writing `SalaryAccount`'s full `withdraw()` logic before a test demands each piece of it.
+
 ## Tasks
 
-### 1. `SalaryAccount` — overdraft up to a limit
+### 1. Tests
+
+- `src/test/java/ch/bbw/accounts/SalaryAccountTests.java` — implement the existing stub.
+- `src/test/java/ch/bbw/accounts/SavingsAccountTests.java` — implement the existing stub.
+- Add `src/test/java/ch/bbw/accounts/PromoYouthSavingsAccountTests.java`.
+
+Cover the **boundaries**, not just the happy path:
+
+- `SavingsAccount`: withdrawing exactly the balance succeeds; one Millirappen more throws.
+- `SalaryAccount`: withdrawing down to exactly `creditLimit` succeeds; one more throws; the balance
+  is genuinely negative afterwards.
+- `SalaryAccount` with `creditLimit = 0` behaves like a savings account.
+- A rejected withdrawal leaves the booking list untouched (this is where a badly ordered override
+  bites).
+- `PromoYouthSavingsAccount`: your promo rule triggers at its boundary.
+- Polymorphism: put one of each type into a `List<Account>`, sum the balances, and assert the total.
+
+### 2. `SalaryAccount` — overdraft up to a limit
 
 Create `ch.bbw.accounts.SalaryAccount extends Account`.
 
@@ -63,7 +95,7 @@ Create `ch.bbw.accounts.SalaryAccount extends Account`.
 Note what you did *not* have to write: amount validation, date validation, appending the booking.
 That all lives in `Account`. Your override is three lines of rule plus a `super` call.
 
-### 2. `PromoYouthSavingsAccount` — a savings account with a promo rule
+### 3. `PromoYouthSavingsAccount` — a savings account with a promo rule
 
 Create `ch.bbw.accounts.PromoYouthSavingsAccount`.
 
@@ -80,7 +112,7 @@ Then give it at least one rule of its own. Pick one (or invent your own):
 - a **bonus interest rate** the other accounts do not get;
 - a **minimum balance** that must remain on the account.
 
-### 3. Give the hierarchy a shared abstract operation
+### 4. Give the hierarchy a shared abstract operation
 
 Add something to `Account` that every subtype must answer, so the abstract class is abstract for a
 reason beyond "cannot be instantiated". Suggestions:
@@ -98,7 +130,7 @@ public abstract long applyInterest(Scheduled date) throws ...;  // books the int
 If you choose `applyInterest`, each subtype books an `INTEREST`/`ZINS` booking with its own rate,
 and `Bank` can run it over **all** accounts with a single loop — no type checks.
 
-### 4. Keep `Bank` polymorphic
+### 5. Keep `Bank` polymorphic
 
 `Bank` must not change much, and specifically must not learn about the new types. Verify that:
 
@@ -107,25 +139,8 @@ and `Bank` can run it over **all** accounts with a single loop — no type check
 - a `SalaryAccount` in overdraft (negative balance) correctly drags the bank total down and shows up
   in `top5LowestBalances()`.
 
-If you added `applyInterest` in task 3, add `Bank.applyInterestToAll(Scheduled date)` and note how
+If you added `applyInterest` in task 4, add `Bank.applyInterestToAll(Scheduled date)` and note how
 short it is.
-
-### 5. Tests
-
-- `src/test/java/ch/bbw/accounts/SalaryAccountTests.java` — implement the existing stub.
-- `src/test/java/ch/bbw/accounts/SavingsAccountTests.java` — implement the existing stub.
-- Add `src/test/java/ch/bbw/accounts/PromoYouthSavingsAccountTests.java`.
-
-Cover the **boundaries**, not just the happy path:
-
-- `SavingsAccount`: withdrawing exactly the balance succeeds; one Millirappen more throws.
-- `SalaryAccount`: withdrawing down to exactly `creditLimit` succeeds; one more throws; the balance
-  is genuinely negative afterwards.
-- `SalaryAccount` with `creditLimit = 0` behaves like a savings account.
-- A rejected withdrawal leaves the booking list untouched (this is where a badly ordered override
-  bites).
-- `PromoYouthSavingsAccount`: your promo rule triggers at its boundary.
-- Polymorphism: put one of each type into a `List<Account>`, sum the balances, and assert the total.
 
 ## Discussion questions
 

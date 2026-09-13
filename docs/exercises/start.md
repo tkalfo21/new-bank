@@ -12,6 +12,12 @@ At the moment, the model includes:
 > [README: Scenarios](../../README.md#scenarios-from-requirement-to-use-case-to-code) for the
 > PDF-to-sprint mapping and workflow. The tasks below are the distilled version; the scenario is
 > the raw requirement.
+>
+> **Work test-first (TDD).** Every exercise brief (`02-Exercise-*.md` onward) lists its **Tests**
+> as Task 1, before any implementation task. Write those tests against the target API described in
+> the brief, watch them fail (`./mvnw test` — red, often a compile error because the class or method
+> doesn't exist yet), then write only enough code to make each one pass (green), refactoring as you
+> go. Do not start an implementation task before its test is written and failing.
 
 ## Suggested Sprint Sequence
 
