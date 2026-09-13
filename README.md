@@ -59,6 +59,36 @@ Started NewBankApplication in 1.1 seconds
 
 ---
 
+## Checking that the app is actually running
+
+Since there are no REST endpoints yet, `404` on `http://localhost:8080/` does **not** mean the app is
+broken. To check the app itself is up, use the built-in **Spring Boot Actuator** health endpoint
+instead:
+
+```bash
+curl http://localhost:8080/actuator/health
+```
+
+A healthy app answers with `"status":"UP"`, plus a breakdown per component (database, disk space,
+liveness/readiness):
+
+```json
+{
+  "status": "UP",
+  "components": {
+    "db": { "status": "UP", "details": { "database": "H2" } },
+    "diskSpace": { "status": "UP" },
+    "livenessState": { "status": "UP" },
+    "readinessState": { "status": "UP" }
+  }
+}
+```
+
+You can also just open `http://localhost:8080/actuator/health` in a browser. If the app hasn't
+started yet, or crashed, you'll get "connection refused" instead of a response.
+
+---
+
 ## Project layout
 
 ```
@@ -137,6 +167,7 @@ exception type. Fixing that is fair game at any point.
 | Web | `spring-boot-starter-webmvc` (the Boot 4 name for `starter-web`) |
 | Persistence | `spring-boot-starter-data-jpa` + H2 in-memory |
 | Testing | `spring-boot-starter-test` — JUnit 5, AssertJ, Mockito, MockMvc |
+| Monitoring | `spring-boot-starter-actuator` — health check at `/actuator/health` |
 
 The database is **in-memory**: it is recreated on every start and gone when you stop the app.
 
