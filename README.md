@@ -37,6 +37,10 @@ real problem — something no longer compiles or the test framework cannot start
 (`mvnw`), which downloads what it needs on first run.
 
 ```bash
+# Get the code
+git clone https://github.com/bbwlc/new-bank.git
+cd new-bank
+
 # Compile everything (main + tests)
 ./mvnw test-compile
 
@@ -135,6 +139,36 @@ Read `docs/exercises/start.md` first — it lists the full sequence. The briefs:
 
 > **Note on numbering:** `01-Exercise-build-the-be.md` is the Spring Boot extension and belongs at
 > the **end**, after sprints 2–5. It is numbered `01` for historical reasons.
+
+---
+
+## Scenarios: from requirement to use-case to code
+
+`docs/scenarios/` contains the actual **requirement text** for each sprint, written as a short
+story at the bank counter (German, one PDF per increment). This is the raw material — the exercise
+briefs in `docs/exercises/` already distill it into tasks, but reading the original scenario first
+is closer to how requirements actually arrive.
+
+**Workflow for each sprint:**
+
+1. **Read** the matching scenario PDF below — it tells you *who* wants *what*, in plain language.
+2. **Draft a use-case** from it yourself: identify the actors, describe the use-case(s), sketch the
+   class diagram. Do this before opening the exercise brief — that's the actual exercise.
+3. **Compare** your use-case against the corresponding `docs/exercises/*.md` brief, then implement.
+
+| Scenario PDF | Requirement (short) | Matches sprint |
+|---|---|---|
+| [`01_UML_Bank2.pdf`](docs/scenarios/01_UML_Bank2.pdf) | Customer opens an account, deposits, withdraws, gets a statement | 1 — baseline |
+| [`03_UML_Bank3.pdf`](docs/scenarios/03_UML_Bank3.pdf) | Customer triggers a booking (date, amount) | 2 — Bookings |
+| [`04_UML_Bank4a.pdf`](docs/scenarios/04_UML_Bank4a.pdf) | Three account types: salary, savings, youth savings (design) | 3 — Specific accounts |
+| [`04_UML_Bank4b.pdf`](docs/scenarios/04_UML_Bank4b.pdf) | ...with credit limit / bonus rules, `TreeMap`-backed `Bank` (implement) | 3 — Specific accounts |
+| [`04_UML_Bank4c.pdf`](docs/scenarios/04_UML_Bank4c.pdf) | Account id is no longer passed in — the bank generates it | 4 — Factory pattern |
+| [`05_UML_Bank5.pdf`](docs/scenarios/05_UML_Bank5.pdf) | Bank staff list all accounts sorted by balance, top-5/bottom-5 | extra — reporting |
+| [`06_UML_Bank6.pdf`](docs/scenarios/06_UML_Bank6.pdf) | Bank exposes `createSavingsAccount`/`createPromoYouthSavingsAccount`/`createSalaryAccount` | 4 — Factory pattern |
+| [`07_UML_Bank7.pdf`](docs/scenarios/07_UML_Bank7.pdf) | Only one `Bank` instance may exist; a second attempt throws | 5 — Singleton pattern |
+
+There is no scenario numbered `02` — the material jumps from `Bank2` to `Bank3`; that is a gap in
+the source, not a missing file.
 
 ---
 
