@@ -128,11 +128,22 @@ public class AccountTests {
     }
 
     @Test
-    @DisplayName("Print account statement")
-    public void testPrint() {
-        // Wird bei Task 7 umgesetzt.
-    }
+@DisplayName("Print account statement")
+public void testPrint() throws Exception {
+    Account account = new SavingsAccount("S-1000");
 
+    account.deposit(Scheduled.now(), 5000, "Lohn");
+    account.withdraw(Scheduled.now(), 2000, "Einkauf");
+
+    String statement = account.printStatement();
+
+    assertTrue(statement.contains("S-1000"));
+    assertTrue(statement.contains("Lohn"));
+    assertTrue(statement.contains("Einkauf"));
+    assertTrue(statement.contains("CHF 0.05000"));
+    assertTrue(statement.contains("CHF -0.02000"));
+    assertTrue(statement.contains("CHF 0.03000"));
+}
     @Test
     @DisplayName("Print monthly account statement")
     public void testMonthlyPrint() {
