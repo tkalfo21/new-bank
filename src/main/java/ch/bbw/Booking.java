@@ -3,40 +3,24 @@ package ch.bbw;
 /**
  * Buchung.
  *
- * @param date   Datum der Transaktion (Banktage seit 1.1.1970).
- * @param amount Transaktionsbetrag (Millirappen).
+ * @param date   Datum der Transaktion als Unix-Timestamp in Millisekunden.
+ * @param amount Transaktionsbetrag in Millirappen.
+ * @param text   Beschreibung der Buchung.
  * @author Luigi Cavuoti, lro@gmx.ch
- * @version 2.1
+ * @version 2.2
  */
-public record Booking(long date, long amount) {
-	/**
-	 * Erzeugt eine neue Buchung
-	 *
-	 * @param date   long
-	 *               Datum der Transaktion (Banktage seit 1.1.1970)
-	 * @param amount long
-	 *               Transaktionsbetrag (Millirappen)
-	 */
-	public Booking {
-	}
+public record Booking(long date, long amount, String text) {
 
-	/**
-	 * Gibt das Datum der Buchung zur�ck.
-	 *
-	 * @return int Datum (Banktage seit 1.1.1970)
-	 */
-	@Override
-	public long date() {
-		return date;
-	}
-
-	/**
-	 * Gibt den Betrag zur�ck.
-	 *
-	 * @return long Betrag (in Millirappen)
-	 */
-	@Override
-	public long amount() {
-		return amount;
-	}
+    /**
+     * Erzeugt eine neue Buchung.
+     *
+     * @param date   Datum der Transaktion als Unix-Timestamp in Millisekunden
+     * @param amount Transaktionsbetrag in Millirappen
+     * @param text   Beschreibung der Buchung
+     */
+    public Booking {
+        if (text == null || text.isBlank()) {
+            throw new IllegalArgumentException("Text darf nicht leer sein");
+        }
+    }
 }
