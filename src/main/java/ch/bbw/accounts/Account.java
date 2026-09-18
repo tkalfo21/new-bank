@@ -5,6 +5,7 @@ import ch.bbw.Scheduled;
 import ch.bbw.exceptions.InvalidAmountException;
 import ch.bbw.exceptions.InvalidDateException;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,5 +76,31 @@ public abstract class Account {
         bookings.add(new Booking(date.toUnix(), -amount, text));
 
         return getBalance();
+    }
+
+    public String printStatement() {
+        StringBuilder statement = new StringBuilder();
+
+        statement.append("Konto: ")
+                .append(id)
+                .append("\n");
+
+        for (Booking booking : bookings) {
+            statement.append(Instant.ofEpochMilli(booking.date()))
+                    .append(" | ")
+                    .append(formatAmount(booking.amount()))
+                    .append(" | ")
+                    .append(booking.text())
+                    .append("\n");
+        }
+
+        statement.append("Saldo: ")
+                .append(formatAmount(getBalance()));
+
+        return statement.toString();
+    }
+
+    private String formatAmount(long amount) {
+        return String.format("CHF %.5f", amount / 100000.0);
     }
 }
