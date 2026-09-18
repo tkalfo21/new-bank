@@ -11,13 +11,6 @@ package ch.bbw;
  */
 public record Booking(long date, long amount, String text) {
 
-    /**
-     * Erzeugt eine neue Buchung.
-     *
-     * @param date   Datum der Transaktion als Unix-Timestamp in Millisekunden
-     * @param amount Transaktionsbetrag in Millirappen
-     * @param text   Beschreibung der Buchung
-     */
     public Booking {
         if (text == null || text.isBlank()) {
             throw new IllegalArgumentException("Text darf nicht leer sein");

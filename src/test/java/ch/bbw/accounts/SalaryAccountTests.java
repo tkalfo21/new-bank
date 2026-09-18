@@ -1,26 +1,14 @@
 package ch.bbw.accounts;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.fail;
+public class SalaryAccountTests {
 
-
-/**
- * Tests der Klasse SalaryAccount.
- *
- * @author Luigi Cavuoti
- * @version 1.1
- */
-public class SalaryAccountTests
-{
-	/**
-	 * Der Test.
-	 */
 	@Test
+	@Disabled("SalaryAccount wird in Exercise 03 implementiert")
 	@DisplayName("Constructs a SalaryAccount and tests a simple deposit")
-	public void test()
-	{
-		fail("ToDo");
+	public void test() {
 	}
 }

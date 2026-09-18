@@ -10,12 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Account {
+
     private final String id;
     private final List<Booking> bookings;
 
     public Account(String id) {
         this.id = id;
-        this.bookings = new ArrayList<Booking>();
+        this.bookings = new ArrayList<>();
     }
 
     public String getId() {
@@ -45,14 +46,20 @@ public abstract class Account {
             throws InvalidAmountException, InvalidDateException {
 
         if (amount <= 0) {
-            throw new InvalidAmountException("amount must be greater than 0");
+            throw new InvalidAmountException(
+                    "amount must be greater than 0"
+            );
         }
 
         if (isInvalidTransaction(date)) {
-            throw new InvalidDateException("date mustn't be in the past");
+            throw new InvalidDateException(
+                    "date mustn't be in the past"
+            );
         }
 
-        bookings.add(new Booking(date.toUnix(), amount, text));
+        bookings.add(
+                new Booking(date.toUnix(), amount, text)
+        );
 
         return getBalance();
     }
@@ -66,14 +73,20 @@ public abstract class Account {
             throws InvalidAmountException, InvalidDateException {
 
         if (amount <= 0) {
-            throw new InvalidAmountException("amount must be greater than 0");
+            throw new InvalidAmountException(
+                    "amount must be greater than 0"
+            );
         }
 
         if (isInvalidTransaction(date)) {
-            throw new InvalidDateException("date mustn't be in the past");
+            throw new InvalidDateException(
+                    "date mustn't be in the past"
+            );
         }
 
-        bookings.add(new Booking(date.toUnix(), -amount, text));
+        bookings.add(
+                new Booking(date.toUnix(), -amount, text)
+        );
 
         return getBalance();
     }
@@ -86,21 +99,27 @@ public abstract class Account {
                 .append("\n");
 
         for (Booking booking : bookings) {
-            statement.append(Instant.ofEpochMilli(booking.date()))
-                    .append(" | ")
-                    .append(formatAmount(booking.amount()))
-                    .append(" | ")
-                    .append(booking.text())
-                    .append("\n");
+            statement.append(
+                    Instant.ofEpochMilli(booking.date())
+            );
+
+            statement.append(" | ");
+            statement.append(formatAmount(booking.amount()));
+            statement.append(" | ");
+            statement.append(booking.text());
+            statement.append("\n");
         }
 
-        statement.append("Saldo: ")
-                .append(formatAmount(getBalance()));
+        statement.append("Saldo: ");
+        statement.append(formatAmount(getBalance()));
 
         return statement.toString();
     }
 
     private String formatAmount(long amount) {
-        return String.format("CHF %.5f", amount / 100000.0);
+        return String.format(
+                "CHF %.5f",
+                amount / 100000.0
+        );
     }
 }
