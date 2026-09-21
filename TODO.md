@@ -17,10 +17,10 @@ task. Write the test, watch it fail (`./mvnw test`), then implement just enough 
 
 ## Sprint 2 — Bookings ([`docs/exercises/02-Exercise-bookings.md`](docs/exercises/02-Exercise-bookings.md))
 
-- [ ] Tests written first: `BookingTests.testInitialization/testPrint`, `AccountTests.testDeposit/testWithdraw/testPrint/testMonthlyPrint`.
-- [ ] `Booking` extended to `(date, amount, text)`; redundant compact-constructor/accessor code removed.
-- [ ] `Account.deposit(...)`/`withdraw(...)` (+ `Bank` equivalents) accept a text, with 2-arg overloads kept as defaults.
-- [ ] `Account.getBookings()` added, returns an unmodifiable view.
+- [x] Tests written first: `BookingTests.testInitialization/testPrint`, `AccountTests.testDeposit/testWithdraw/testPrint/testMonthlyPrint`.
+- [x] `Booking` extended to `(date, amount, text)`; redundant compact-constructor/accessor code removed.
+- [x] `Account.deposit(...)`/`withdraw(...)` (+ `Bank` equivalents) accept a text, with 2-arg overloads kept as defaults.
+- [x] `Account.getBookings()` added, returns an unmodifiable view.
 - [ ] `balance` field removed from `Account`; `getBalance()` derived from the booking list.
 - [ ] `SavingsAccount.withdraw(...)` re-checked: still reads balance *before* delegating — verify overdraft check still works after balance is derived.
 - [ ] Booking date semantics fixed (code and Javadoc agree — ms since epoch, or bank-days, pick one).
