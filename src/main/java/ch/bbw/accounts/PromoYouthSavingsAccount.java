@@ -36,10 +36,10 @@ public class PromoYouthSavingsAccount extends Account
 
     @Override
     public long deposit(Scheduled date, long amount, String text) throws InvalidAmountException, InvalidDateException {
-        long bonus = amount / 100
-        amount = amount + bonus
+        long bonus = amount / 100;
+        amount = amount + bonus;
 
-        return super.deposit(date, amount, text)
+        return super.deposit(date, amount, text);
     }
 	/**
 	 * Hebt den gegebenen Betrag vom Konto ab.
@@ -52,12 +52,12 @@ public class PromoYouthSavingsAccount extends Account
 	@Override
 	public long withdraw(Scheduled date, long amount) throws InvalidAmountException, InvalidDateException {
 		if (getBalance() < amount){
-			throw new InvalidAmountException("Amount is greater than balance");
+			throw new InvalidAmountException("Amount is greater than balance");}
         if (amount > 200){
-            throw new InvalidAmountException("Amount too large for a Youth Savings Account. You may not withdraw over 500.")
+            throw new InvalidAmountException("Amount too large for a Youth Savings Account. You may not withdraw over 200.");
         }
         if (amount < 100){
-            throw new InvalidAmountException("Amount too small for a Youth Savings Account. You may not withdraw less than 1.")
+            throw new InvalidAmountException("Amount too small for a Youth Savings Account. You may not withdraw less than 100.");
         }
 
         return super.withdraw(date, amount);
