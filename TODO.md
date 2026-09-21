@@ -21,10 +21,10 @@ task. Write the test, watch it fail (`./mvnw test`), then implement just enough 
 - [x] `Booking` extended to `(date, amount, text)`; redundant compact-constructor/accessor code removed.
 - [x] `Account.deposit(...)`/`withdraw(...)` (+ `Bank` equivalents) accept a text, with 2-arg overloads kept as defaults.
 - [x] `Account.getBookings()` added, returns an unmodifiable view.
-- [ ] `balance` field removed from `Account`; `getBalance()` derived from the booking list.
-- [ ] `SavingsAccount.withdraw(...)` re-checked: still reads balance *before* delegating — verify overdraft check still works after balance is derived.
-- [ ] Booking date semantics fixed (code and Javadoc agree — ms since epoch, or bank-days, pick one).
-- [ ] `printStatement()` (or similar) added to `Account`.
+- [x] `balance` field removed from `Account`; `getBalance()` derived from the booking list.
+- [x] `SavingsAccount.withdraw(...)` re-checked: still reads balance *before* delegating — verify overdraft check still works after balance is derived.
+- [x] Booking date semantics fixed (code and Javadoc agree — ms since epoch, or bank-days, pick one).
+- [x] `printStatement()` (or similar) added to `Account`.
 
 ## Sprint 3 — Specific accounts ([`docs/exercises/03-Exercise-specific-accounts.md`](docs/exercises/03-Exercise-specific-accounts.md))
 
