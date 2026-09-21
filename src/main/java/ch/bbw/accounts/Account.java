@@ -29,6 +29,10 @@ public abstract class Account {
                 .sum();
     }
 
+    public String getAccountType(Account account){
+        return getClass().getSimpleName();
+    }
+
     public List<Booking> getBookings() {
         return List.copyOf(bookings);
     }
