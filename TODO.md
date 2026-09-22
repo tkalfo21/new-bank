@@ -50,7 +50,7 @@ task. Write the test, watch it fail (`./mvnw test`), then implement just enough 
 - [x] Tests written first: identity (`assertSame`), constructor-not-public (reflection), state-isolation test (see the brief's note on why this one may pass trivially at first).
 - [ ] `Bank` constructor made `private`; `public static Bank getInstance()` added.
 - [ ] All call sites (`new Bank()` → `Bank.getInstance()`) updated, including existing tests.
-- [ ] Eager vs. lazy-synchronized vs. other implementation compared and one chosen, with reasoning.
+- [x] Eager vs. lazy-synchronized vs. other implementation compared and one chosen, with reasoning.
 
 ## Sprints 6–11 — Spring Boot backend ([`docs/exercises/10-Exercise-build-the-be.md`](docs/exercises/10-Exercise-build-the-be.md))
 
