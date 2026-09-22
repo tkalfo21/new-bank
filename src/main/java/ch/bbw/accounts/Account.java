@@ -4,6 +4,7 @@ import ch.bbw.Booking;
 import ch.bbw.Scheduled;
 import ch.bbw.exceptions.InvalidAmountException;
 import ch.bbw.exceptions.InvalidDateException;
+import lombok.Getter;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -13,9 +14,12 @@ public abstract class Account {
 
     private final String id;
     private final List<Booking> bookings;
+    @Getter
+    private final String accountType;
 
     public Account(String id) {
         this.id = id;
+        this.accountType = getClass().getSimpleName();
         this.bookings = new ArrayList<>();
     }
 
@@ -27,10 +31,6 @@ public abstract class Account {
         return bookings.stream()
                 .mapToLong(Booking::amount)
                 .sum();
-    }
-
-    public String getAccountType(Account account){
-        return getClass().getSimpleName();
     }
 
     public List<Booking> getBookings() {

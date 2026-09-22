@@ -38,9 +38,9 @@ task. Write the test, watch it fail (`./mvnw test`), then implement just enough 
 
 - [x] Id generation with type prefixes (`S-`/`Y-`/`P-`) and a counter starting at 1000 — *this is the exercise's own starting point, not something to redo.*
 - [x] Tests written first: `src/test/java/ch/bbw/AccountFactoryTests.java` (should fail against the current buggy factory), `BankTests.testCreate()`.
-- [ ] **Bug still open:** `createPromoYouthSavingsAccount()` and `createSalaryAccount(long)` in `AccountFactory` still both return a plain `SavingsAccount` — fix to return the real subtypes (needs Sprint 3 done first).
-- [ ] `creditLimit` actually passed into `SalaryAccount`'s constructor instead of discarded.
-- [ ] `AccountType` enum introduced (type + prefix together).
+- [x] **Bug still open:** `createPromoYouthSavingsAccount()` and `createSalaryAccount(long)` in `AccountFactory` still both return a plain `SavingsAccount` — fix to return the real subtypes (needs Sprint 3 done first).
+- [x] `creditLimit` actually passed into `SalaryAccount`'s constructor instead of discarded.
+- [x] `AccountType` enum introduced (type + prefix together).
 - [ ] Single dispatching `create(AccountType, long)` entry point added, with a documented answer to the API-choice question.
 - [ ] Id counter made thread-safe (`AtomicLong`) or the single-threaded assumption documented.
 - [ ] `Bank` confirmed to not import/instantiate any concrete account class.
