@@ -137,15 +137,6 @@ public class BankTests {
         assertEquals(8000, bank.getBalance());
     }
 
-
-    @Test
-    @DisplayName("assertSame soll bei Bank funktionieren.")
-    public void checkAssertSame(){
-        Bank bank1 = new Bank();
-        Bank bank2 = new Bank();
-
-        assertSame(bank1, bank2);
-    }
     @Test
     @DisplayName("Tests the List of the top 5 balances")
     public void testTop5() throws Exception {

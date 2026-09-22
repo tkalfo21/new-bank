@@ -13,10 +13,15 @@ public class Bank {
 
     private final TreeMap<String, Account> accounts;
     private final AccountFactory accountFactory;
+    private static final Bank INSTANCE = new Bank();
 
     public Bank() {
         accounts = new TreeMap<>();
         accountFactory = new AccountFactory();
+    }
+
+    public static Bank getInstance(){
+        return INSTANCE;
     }
 
     public String createSavingsAccount() {
