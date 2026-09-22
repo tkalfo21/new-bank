@@ -41,13 +41,13 @@ task. Write the test, watch it fail (`./mvnw test`), then implement just enough 
 - [x] **Bug still open:** `createPromoYouthSavingsAccount()` and `createSalaryAccount(long)` in `AccountFactory` still both return a plain `SavingsAccount` — fix to return the real subtypes (needs Sprint 3 done first).
 - [x] `creditLimit` actually passed into `SalaryAccount`'s constructor instead of discarded.
 - [x] `AccountType` enum introduced (type + prefix together).
-- [ ] Single dispatching `create(AccountType, long)` entry point added, with a documented answer to the API-choice question.
-- [ ] Id counter made thread-safe (`AtomicLong`) or the single-threaded assumption documented.
-- [ ] `Bank` confirmed to not import/instantiate any concrete account class.
+- [x] Single dispatching `create(AccountType, long)` entry point added, with a documented answer to the API-choice question.
+- [x] Id counter made thread-safe (`AtomicLong`) or the single-threaded assumption documented.
+- [x] `Bank` confirmed to not import/instantiate any concrete account class.
 
 ## Sprint 5 — Singleton ([`docs/exercises/05-Exercise-singleton-pattern.md`](docs/exercises/05-Exercise-singleton-pattern.md))
 
-- [ ] Tests written first: identity (`assertSame`), constructor-not-public (reflection), state-isolation test (see the brief's note on why this one may pass trivially at first).
+- [x] Tests written first: identity (`assertSame`), constructor-not-public (reflection), state-isolation test (see the brief's note on why this one may pass trivially at first).
 - [ ] `Bank` constructor made `private`; `public static Bank getInstance()` added.
 - [ ] All call sites (`new Bank()` → `Bank.getInstance()`) updated, including existing tests.
 - [ ] Eager vs. lazy-synchronized vs. other implementation compared and one chosen, with reasoning.
