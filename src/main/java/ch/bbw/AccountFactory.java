@@ -2,30 +2,32 @@ package ch.bbw;
 
 import ch.bbw.accounts.*;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 public class AccountFactory {
     /**
      * Next account id.
      */
-    private long nextAccountId;
+    private AtomicLong nextAccountId;
 
     public AccountFactory() {
-        this.nextAccountId = 1000;
+        this.nextAccountId = new AtomicLong(1000);
     }
 
     public Account createPromoYouthSavingsAccount() {
-        String id = "Y-" + nextAccountId++;
+        String id = "Y-" + nextAccountId.getAndIncrement();
 
         return new PromoYouthSavingsAccount(id);
     }
 
     public Account createSalaryAccount(long creditLimit) {
-        String id = "P-" + nextAccountId++;
+        String id = "P-" + nextAccountId.getAndIncrement();
 
         return new SalaryAccount(id, creditLimit);
     }
 
     public Account createSavingsAccount(){
-        String id = "S-" + nextAccountId++;
+        String id = "S-" + nextAccountId.getAndIncrement();
 
         return new SavingsAccount(id);
     }
