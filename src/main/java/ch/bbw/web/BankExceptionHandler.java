@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @RestControllerAdvice
 public class BankExceptionHandler {
@@ -18,7 +19,7 @@ public class BankExceptionHandler {
         return ResponseEntity.status(status).body(new ErrorResponse(error.getMessage()));
     }
     @ExceptionHandler({InvalidDateException.class, IllegalArgumentException.class,
-            HttpMessageNotReadableException.class})
+            HttpMessageNotReadableException.class, MethodArgumentNotValidException.class})
     public ResponseEntity<ErrorResponse> invalid(Exception error) {
         return ResponseEntity.badRequest().body(new ErrorResponse(error.getMessage()));
     }

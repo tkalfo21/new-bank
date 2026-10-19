@@ -41,6 +41,12 @@ public abstract class Account {
         if (amount <= 0) throw new InvalidAmountException("Betrag muss positiv sein");
         if (isInvalidTransaction(date)) throw new InvalidDateException("Datum darf nicht in der Vergangenheit liegen");
     }
+    /** Nur zur Wiederherstellung dauerhaft gespeicherter Buchungen nutzen. */
+    public void restoreBooking(Booking booking) {
+        if (booking == null || booking.amount() == 0)
+            throw new IllegalArgumentException("Ungültige gespeicherte Buchung");
+        bookings.add(booking);
+    }
     public String printStatement() {
         StringBuilder statement = new StringBuilder("Konto: ").append(id).append("\n");
         for (Booking booking : bookings) {

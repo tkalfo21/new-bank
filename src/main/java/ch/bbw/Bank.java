@@ -39,6 +39,13 @@ public class Bank {
         return Holder.INSTANCE;
     }
 
+    /** Rekonstruktion der Konten beim Serverstart; IDs bleiben erhalten. */
+    public synchronized void restoreAccount(String id, long creditLimit, List<ch.bbw.Booking> history) {
+        Account account = accountFactory.restore(id, creditLimit);
+        history.forEach(account::restoreBooking);
+        accounts.put(id, account);
+    }
+
     public String createSavingsAccount() {
         var account = accountFactory.createSavingsAccount();
         var id = account.getId();
