@@ -41,9 +41,10 @@ Stand: 19.10.2026. Die Änderungen liegen im Branch `complete-bank-exercises`.
 - [ ] Optional in dieser Übung: OpenAPI/Swagger und Bean Validation.
 
 ## Weitere Erweiterungen aus `docs/exercises/start.md`
-- [ ] Dauerhafte Speicherung von Konten/Buchungen über JPA (Sprint 9).
-- [ ] Erweiterte Bean Validation und persistenzbezogene Integrationstests (Sprints 10–11).
-- [ ] Zusätzliches Architekturgespräch zu Spring-Bean-Scopes (Sprint 12; Grundlagen in `docs/exercise-solutions.md`).
+- [x] Dauerhafte Speicherung von Konten/Buchungen über JPA (Sprint 9).
+- [x] Bean Validation für Transaktionsbetrag und Kreditlimite (Sprint 10).
+- [ ] Zusätzliche persistenzbezogene Integrations-/Neustarttests (Sprint 11).
+- [x] Architekturgespräch zu Spring-Bean-Scopes (Sprint 12; siehe `docs/exercise-solutions.md`).
 
 ### Testen
 
@@ -54,6 +55,6 @@ Stand: 19.10.2026. Die Änderungen liegen im Branch `complete-bank-exercises`.
 
 Auf Windows (PowerShell): `./mvnw.cmd test` bzw. `./mvnw.cmd spring-boot:run`.
 
-Hinweis: In-Memory-Konten werden bei Neustart nicht gespeichert. Vor Produktivbetrieb
+Hinweis: Die API speichert Konten in `./data/newbank` (H2-Datei). Vor Produktivbetrieb
 braucht die Bank unter anderem persistente Transaktionen, sichere Authentisierung und
 transaktionssichere Konto-IDs.
