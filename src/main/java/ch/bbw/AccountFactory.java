@@ -25,6 +25,21 @@ public class AccountFactory {
             case SALARY -> new SalaryAccount(id, creditLimit);
         };
     }
+    /** Reconstruct an account with its persisted ID without allocating a new one. */
+    public Account restore(String id, long creditLimit) {
+        if (id == null || !id.matches("[SYP]-[0-9]+")) throw new IllegalArgumentException("Ungültige Konto-ID");
+        String prefix = id.substring(0, 1);
+        long sequence = Long.parseLong(id.substring(2));
+        if (sequence == Long.MAX_VALUE) throw new IllegalArgumentException("Konto-ID zu gross");
+        nextAccountId.updateAndGet(current -> Math.max(current, sequence + 1));
+        return switch (prefix) {
+            case "S" -> new SavingsAccount(id);
+            case "Y" -> new PromoYouthSavingsAccount(id);
+            case "P" -> new SalaryAccount(id, creditLimit);
+            default -> throw new IllegalArgumentException("Unbekannter Kontotyp");
+        };
+    }
+
     /** Kompatible ältere String-API. */
     public Account create(String type, long limit) {
         return switch (type) {
