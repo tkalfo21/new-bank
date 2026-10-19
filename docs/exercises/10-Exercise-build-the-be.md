@@ -1,120 +1,62 @@
-# Exercise 01 — Build the Backend
+# Übung 01 – Das Bank-Backend entwickeln
 
-## Goal
+**Erweiterung nach Sprint 5, im Plan Sprints 6–11.**
 
-Turn the existing `ch.bbw` domain model (`Bank`, `Account`, `AccountFactory`, `Booking`, `Scheduled`)
-into a working Spring Boot REST API that a separate frontend (Vite/JS, built in a later exercise)
-can talk to over HTTP.
+## Ziel
+Das vorhandene Bank-Domänenmodell wird über eine Spring-Boot-REST-API bereitgestellt. Ein separates Frontend kann damit Konten eröffnen, Einzahlungen und Auszahlungen buchen sowie Kontostände und Buchungen lesen. Das fachliche Domänenmodell soll dabei nicht unnötig neu geschrieben werden.
 
-You are **not** starting from scratch — the domain logic already exists and is tested
-(`src/test/java/BankTests.java`, `BookingTests.java`, `src/test/java/ch/bbw/accounts/*`).
-This exercise is about wrapping that domain model in a web layer, not rewriting it.
+## Voraussetzungen
+Java 21, Maven, Spring Boot und die vorhandenen Klassen `Bank`, `Account`, `AccountFactory`, `Booking` sowie `Scheduled`.
 
-## Prerequisites / current state
+## Aufgaben
 
-- Spring Boot project (`pom.xml`), Java 21, Maven.
-- Domain classes under `src/main/java/ch/bbw`:
-  - `Bank` — in-memory registry of `Account`s (keyed by account id), exposes create/deposit/withdraw/balance operations.
-  - `Account` (abstract) / `SavingsAccount` — balance + booking history.
-  - `AccountFactory` — creates accounts with generated ids (`S-…`, `Y-…`, `P-…`).
-  - `Booking` — immutable record of a single transaction (date, amount).
-  - `Scheduled` — represents a transaction date, rejects past-due dates.
-  - `exceptions.InvalidAmountException`, `exceptions.InvalidDateException`.
-- `pom.xml` currently only has `spring-boot-devtools` and `junit-jupiter-engine` — **no web starter yet**.
-- No REST controllers, no DTOs, no persistence exist yet.
+### 1. Web-Server aktivieren
+Füge den passenden Spring-Boot-Web-Starter hinzu und starte mit `./mvnw spring-boot:run`. Die Anwendung soll auf `localhost:8080` antworten.
 
-### Known bug to fix as part of this exercise
+### 2. REST-API entwerfen
+| Methode | Pfad | Beschreibung |
+|---|---|---|
+| POST | `/accounts/savings` | Sparkonto eröffnen |
+| POST | `/accounts/promo-youth` | Jugendsparkonto eröffnen |
+| POST | `/accounts/salary` | Lohnkonto mit Kreditlimite eröffnen |
+| GET | `/accounts/{id}` | Kontodaten |
+| GET | `/accounts/{id}/balance` | Kontostand |
+| POST | `/accounts/{id}/deposit` | Einzahlung |
+| POST | `/accounts/{id}/withdraw` | Auszahlung |
+| GET | `/bank/balance` | Gesamtsaldo |
+| GET | `/bank/top5/highest` | Fünf höchste Saldos |
+| GET | `/bank/top5/lowest` | Fünf niedrigste Saldos |
 
-`AccountFactory.createPromoYouthSavingsAccount()` and `AccountFactory.createSalaryAccount(long)`
-both instantiate a plain `SavingsAccount` instead of a dedicated subclass. Decide whether to:
+Der Zeitstempel soll in HTTP-Anfragen als ISO-8601-Zeitstempel angenommen werden. Fehlt das Datum, kann der Server den aktuellen Zeitpunkt verwenden.
 
-- introduce `PromoYouthSavingsAccount` / `SalaryAccount` subclasses with their own rules (e.g. salary
-  account should allow going into its `creditLimit`), or
-- explicitly document that all account types share `SavingsAccount` behaviour for now and drop the
-  unused `creditLimit` parameter.
+### 3. Service-Schicht
+Ein `@Service`, zum Beispiel `BankService`, kapselt den Zugriff auf das Bankmodell. Controller sollen nicht direkt `Bank` verwenden.
 
-Either is acceptable — pick one, note the decision in your PR/commit message.
+### 4. DTOs verwenden
+Über HTTP sollen eigene Anfrage- und Antwortdatensätze übertragen werden, beispielsweise `AccountResponse`, `BalanceResponse`, `DepositRequest` und `WithdrawRequest`. Gib keine internen Domänenobjekte unmittelbar als API-Antworten aus.
 
-## Tasks
+### 5. Fehlerbehandlung
+Mit `@RestControllerAdvice` werden erwartete Fehler in verständliche JSON-Antworten umgewandelt: etwa HTTP 404 bei unbekannter Kontonummer und HTTP 400 bei ungültigem Betrag oder Datum.
 
-### 1. Add the web starter
+### 6. CORS konfigurieren
+Erlaube für die lokale Entwicklung das Frontend unter `http://localhost:5173`.
 
-Add `spring-boot-starter-web` to `pom.xml` (compile scope, not test). Confirm the app boots with
-`./mvnw spring-boot:run` and serves on `localhost:8080`.
+### 7. Tests erstellen
+Die Domänentests müssen weiterhin bestehen. Ergänze HTTP-Integrationstests für Kontoeröffnung, Einzahlung, Auszahlung und einen Fehlerfall, beispielsweise einen verbotenen Überzug.
 
-### 2. Design the REST API
+## Zusätzliche Aufgabe: Fehler in der Kontoerstellung
+Prüfe, ob `AccountFactory` die richtigen Kontounterklassen erzeugt und `creditLimit` nicht verliert. Behebe den Fehler oder dokumentiere deine bewusst vereinfachte Lösung.
 
-Expose the `Bank` operations as HTTP endpoints. Suggested resource shape (adjust as needed, but keep
-it RESTful):
+## Nicht Bestandteil der ursprünglichen Backend-Übung
+Dauerhafte Datenhaltung, Anmeldung/Berechtigungen und Frontend-Oberfläche. Dauerhafte Datenhaltung wird separat in Sprint 9 behandelt.
 
-| Method | Path                          | Body                          | Response                          |
-|--------|-------------------------------|--------------------------------|------------------------------------|
-| POST   | `/accounts/savings`           | —                               | `{ "id": "S-1000" }`               |
-| POST   | `/accounts/promo-youth`       | —                               | `{ "id": "Y-1000" }`               |
-| POST   | `/accounts/salary`            | `{ "creditLimit": -500 }`       | `{ "id": "P-1000" }`               |
-| GET    | `/accounts/{id}`              | —                               | `{ "id", "balance" }`              |
-| GET    | `/accounts/{id}/balance`      | —                               | `{ "balance": 12345 }`             |
-| POST   | `/accounts/{id}/deposit`      | `{ "amount": 1000, "date": … }` | `{ "balance": … }`                 |
-| POST   | `/accounts/{id}/withdraw`     | `{ "amount": 500, "date": … }`  | `{ "balance": … }`                 |
-| GET    | `/bank/balance`                | —                               | `{ "balance": … }`                 |
-| GET    | `/bank/top5/highest`          | —                               | `[ { "id", "balance" }, … ]`       |
-| GET    | `/bank/top5/lowest`           | —                               | `[ { "id", "balance" }, … ]`       |
+## Abnahmekriterien
+- [ ] Anwendung startet und antwortet auf Port 8080.
+- [ ] Alle vorgesehenen REST-Endpunkte funktionieren.
+- [ ] Erwartete Fehler liefern sinnvolle JSON-Fehlerantworten.
+- [ ] CORS für den lokalen Entwicklungsserver funktioniert.
+- [ ] Kontoerstellung ist fachlich korrekt.
+- [ ] Die Tests bestehen, auch auf HTTP-Ebene.
 
-Decide what "date" means over HTTP — the domain uses `Scheduled` (relative milliseconds-until-due).
-The simplest option: accept an ISO-8601 timestamp (or omit the field and default to `Scheduled.now()`
-server-side) and convert it to `Scheduled` inside the controller/service — don't leak `Scheduled`'s
-internal representation into the API.
-
-### 3. Add a service layer
-
-Don't call `Bank` directly from `@RestController`. Add a thin `@Service` (e.g. `BankService`) that
-wraps a single `Bank` instance (bean-scoped singleton is fine for this exercise — no persistence
-required yet) and is what the controller talks to. This keeps the web layer swappable later.
-
-### 4. DTOs, not domain objects, cross the HTTP boundary
-
-Create request/response records (e.g. `AccountResponse`, `BalanceResponse`, `DepositRequest`,
-`WithdrawRequest`) under a `web` or `dto` package. Never return `Account` or `Booking` directly from
-a controller — they're internal domain types.
-
-### 5. Error handling
-
-`Bank`, `Account` and friends throw `InvalidAmountException` / `InvalidDateException` /
-`IllegalArgumentException`. Add a `@RestControllerAdvice` that maps these to sensible HTTP status
-codes (e.g. `404` for unknown account id, `400` for invalid amount/date) with a JSON error body
-(`{ "error": "message" }`) instead of a raw stack trace / default Spring error page.
-
-### 6. CORS
-
-The frontend (Vite dev server) will run on a different origin (typically `localhost:5173`). Add a
-CORS configuration (`@CrossOrigin` on the controller, or a global `WebMvcConfigurer`) allowing that
-origin for local development.
-
-### 7. Tests
-
-- Keep the existing domain tests green (`./mvnw test`).
-- Add at least one `@SpringBootTest` / `@WebMvcTest` covering the controller layer: creating an
-  account, depositing, withdrawing, and the error path (e.g. withdrawing more than the balance from
-  a `SavingsAccount` should surface as a 4xx response, not a 500).
-
-## Out of scope for this exercise
-
-- Persistence (database) — an in-memory `Bank` is fine for now.
-- Authentication/authorization.
-- The frontend itself (covered in a later exercise).
-
-## Acceptance criteria
-
-- [ ] `./mvnw spring-boot:run` starts the app and it responds on `localhost:8080`.
-- [ ] All endpoints listed above (or your adjusted equivalents) work via `curl`/Postman.
-- [ ] Domain exceptions are translated into JSON error responses with appropriate status codes, no
-      raw 500s for expected error cases (invalid amount, invalid date, unknown account id).
-- [ ] CORS is configured for the local Vite origin.
-- [ ] `AccountFactory` bug (see above) is fixed or explicitly documented as a deliberate decision.
-- [ ] `./mvnw test` passes, including new controller-level tests.
-
-## Stretch goals (optional)
-
-- Add a `GET /accounts/{id}/bookings` endpoint returning the transaction history.
-- Add OpenAPI/Swagger UI (`springdoc-openapi-starter-webmvc-ui`) for interactive API docs.
-- Add input validation (`jakarta.validation`) on request DTOs instead of hand-rolled checks.    
+## Freiwillige Zusatzaufgaben
+Buchungshistorie unter `/accounts/{id}/bookings`; OpenAPI/Swagger; Bean Validation für Anfragen.

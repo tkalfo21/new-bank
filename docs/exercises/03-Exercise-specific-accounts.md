@@ -1,179 +1,59 @@
- # Exercise 03 — Specific Accounts (Inheritance)
+# Übung 03 – Spezifische Kontotypen und Vererbung
 
-> **Sprint 3** of `start.md`. Builds on Exercise 02. Numbering note:
-> `01-Exercise-build-the-be.md` (Spring Boot) comes *after* 02–05.
+**Sprint 3.** Ziel: Für verschiedene Bankprodukte eigene Kontounterklassen erstellen und ihre Regeln über Polymorphie anwenden. `Bank` soll ausschliesslich den abstrakten Typ `Account` verwenden.
 
-## Goal
+## Ausgangslage
+`Account` enthält allgemeine Funktionen und Validierungen. `SavingsAccount` verhindert Überzüge. Zwei weitere Produkte werden benötigt: `SalaryAccount` und `PromoYouthSavingsAccount`.
 
-Turn the single concrete account type into a small **type hierarchy**. Each subtype gets its own
-withdrawal rule, and the rest of the system keeps working unchanged because everything still talks
-to the abstract `Account`.
+## Testgetriebenes Vorgehen
+Schreibe Grenzwerttests zuerst. Ein zunächst nicht kompilierender Test ist erlaubt, wenn die geprüfte Klasse noch fehlt. Ergänze anschliessend schrittweise die Implementierung.
 
-This is the exercise where polymorphism has to earn its keep: if `Bank` needs an `if (account
-instanceof SalaryAccount)` anywhere, the design has failed.
+## Aufgaben
 
-## Prerequisites / current state
+### 1. Kontotypen testen
+Ergänze `SalaryAccountTests` und `SavingsAccountTests` sowie eine neue Datei `PromoYouthSavingsAccountTests`.
 
-Read before you start:
+Erforderliche Grenzfälle:
+- Sparkonto: genau das Guthaben auszahlen ist erlaubt; ein Millirappen mehr nicht.
+- Lohnkonto: genau bis zur Kreditlimite auszahlen ist erlaubt; ein Millirappen darüber nicht.
+- Lohnkonto mit Kreditlimite 0 verhält sich beim Überzug wie ein Sparkonto.
+- Verbotene Auszahlungen erzeugen keine Buchung.
+- Jugendkonto: eigene Sonderregel an ihrem Grenzwert prüfen.
+- Polymorphie: drei Kontotypen als `List<Account>` behandeln und ihre Saldos summieren.
 
-- `src/main/java/ch/bbw/accounts/Account.java`
-- `src/main/java/ch/bbw/accounts/SavingsAccount.java`
-- `src/main/java/ch/bbw/Bank.java`
+### 2. Lohnkonto
+Implementiere `SalaryAccount extends Account` mit `SalaryAccount(String id, long creditLimit)`.
 
-### What already exists
+Die Kreditlimite ist **negativ oder null** und beschreibt den kleinsten erlaubten Saldo. Eine positive Limite wird mit `IllegalArgumentException` abgewiesen. Eine Auszahlung ist nur erlaubt, wenn der neue Saldo mindestens so hoch wie `creditLimit` bleibt. Ergänze einen Getter.
 
-- `Account` is **abstract**: it owns the id, the booking list, and the generic `deposit()` /
-  `withdraw()` implementations plus the shared validation (amount must be `> 0`, date must not be
-  past due).
-- `SavingsAccount extends Account` and overrides `withdraw(...)` to add one rule: **no overdraft**.
-  It throws `InvalidAmountException` if `getBalance() < amount`, otherwise delegates to
-  `super.withdraw(...)`.
-- `Bank` already advertises three products — `createSavingsAccount()`,
-  `createPromoYouthSavingsAccount()`, `createSalaryAccount(long creditLimit)` — and stores everything
-  in a `TreeMap<String, Account>`, i.e. it only ever sees the abstract type.
+### 3. Jugendkonto
+Entscheide, ob `PromoYouthSavingsAccount` direkt von `Account` oder von `SavingsAccount` erbt. Begründe die Wahl in einem Kommentar. Ergänze mindestens eine eigene Regel, zum Beispiel:
+- Höchstens CHF 200 (20 Millionen Millirappen) pro Kalendermonat auszahlen.
+- Einen zusätzlichen Bonuszins.
+- Einen Mindestkontostand.
 
-### What is missing
+### 4. Gemeinsame abstrakte Methode
+Definiere in `Account` eine abstrakte Methode, die alle Untertypen implementieren, beispielsweise `getAccountType()` oder `applyInterest(...)`.
 
-1. **Two of the three products do not exist as types.** `PromoYouthSavingsAccount` and
-   `SalaryAccount` are advertised by `Bank` but there is no class for either. Today all three
-   products are plain `SavingsAccount` instances that differ only in their id prefix.
-2. **`creditLimit` is accepted and thrown away.** `Bank.createSalaryAccount(long creditLimit)` takes
-   the parameter and nothing ever reads it.
-3. **`SalaryAccountTests` is an orphan.** `src/test/java/ch/bbw/accounts/SalaryAccountTests.java`
-   tests a class that does not exist yet.
+### 5. Polymorphe Bank
+`Bank` darf keine Typabfragen mit `instanceof` oder Umwandlungen in konkrete Konto-Unterklassen benötigen. Prüfe die Gesamtsumme und die fünf höchsten beziehungsweise niedrigsten Saldos auch bei einem überzogenen Lohnkonto.
 
-> The wiring in `AccountFactory` is deliberately **not** part of this exercise — you will fix that in
-> Exercise 04. Here you build the types; there you build the creation.
+## Diskussionsfragen
+- Schränkt das Überzugsverbot das Liskovsche Substitutionsprinzip ein?
+- Warum sind private Felder besser geschützt als `protected`-Felder?
+- Wann ist Komposition mit Strategien sinnvoller als Vererbung?
+- Was bringt eine abstrakte Basisklasse gegenüber einem Interface?
 
-## Work test-first (TDD)
+## Nicht Bestandteil
+Factory, Singleton, HTTP, DTOs und Persistenz.
 
-Task 1 below asks you to write the tests for `SalaryAccount` and `PromoYouthSavingsAccount` — classes
-that do not exist yet. That's intentional:
+## Abnahmekriterien
+- [ ] Beide zusätzlichen Kontounterklassen existieren.
+- [ ] Kreditlimite wird eingehalten und geprüft.
+- [ ] Jugendkonto hat eine dokumentierte eigene Regel.
+- [ ] Mindestens eine abstrakte Operation in `Account`.
+- [ ] `Bank` bleibt unabhängig von konkreten Kontotypen.
+- [ ] Alle Grenzwerttests bestehen.
 
-1. Write one test for one boundary described in Task 1 (e.g. "withdrawing down to exactly
-   `creditLimit` succeeds").
-2. Run `./mvnw test`. It should fail to compile, because `SalaryAccount` doesn't exist. That's a
-   valid **red** — it tells you exactly what type and constructor signature to create next.
-3. Write the smallest amount of Task 2/3's design that makes the test compile and pass
-   (**green**) — not the whole class, just enough for this one test.
-4. Repeat for the next boundary, refactoring as the class fills in.
-
-Resist writing `SalaryAccount`'s full `withdraw()` logic before a test demands each piece of it.
-
-## Tasks
-
-### 1. Tests
-
-- `src/test/java/ch/bbw/accounts/SalaryAccountTests.java` — implement the existing stub.
-- `src/test/java/ch/bbw/accounts/SavingsAccountTests.java` — implement the existing stub.
-- Add `src/test/java/ch/bbw/accounts/PromoYouthSavingsAccountTests.java`.
-
-Cover the **boundaries**, not just the happy path:
-
-- `SavingsAccount`: withdrawing exactly the balance succeeds; one Millirappen more throws.
-- `SalaryAccount`: withdrawing down to exactly `creditLimit` succeeds; one more throws; the balance
-  is genuinely negative afterwards.
-- `SalaryAccount` with `creditLimit = 0` behaves like a savings account.
-- A rejected withdrawal leaves the booking list untouched (this is where a badly ordered override
-  bites).
-- `PromoYouthSavingsAccount`: your promo rule triggers at its boundary.
-- Polymorphism: put one of each type into a `List<Account>`, sum the balances, and assert the total.
-
-### 2. `SalaryAccount` — overdraft up to a limit
-
-Create `ch.bbw.accounts.SalaryAccount extends Account`.
-
-- Constructor: `SalaryAccount(String id, long creditLimit)`.
-- `creditLimit` is a **negative** number (or zero): it is the lowest balance the account may reach.
-  Reject a positive credit limit in the constructor with `IllegalArgumentException` — a "limit" that
-  lets you go *up* is nonsense.
-- Override `withdraw(...)`: allow the withdrawal only while
-  `getBalance() - amount >= creditLimit`. Otherwise throw `InvalidAmountException` with a message
-  that names the limit.
-- Add a getter for the credit limit.
-
-Note what you did *not* have to write: amount validation, date validation, appending the booking.
-That all lives in `Account`. Your override is three lines of rule plus a `super` call.
-
-### 3. `PromoYouthSavingsAccount` — a savings account with a promo rule
-
-Create `ch.bbw.accounts.PromoYouthSavingsAccount`.
-
-First decide the **superclass**, and justify it in a comment:
-
-- `extends SavingsAccount` — you inherit the no-overdraft rule for free, but you are now coupled to
-  `SavingsAccount`'s implementation.
-- `extends Account` — independent, but you re-implement the no-overdraft check.
-
-Then give it at least one rule of its own. Pick one (or invent your own):
-
-- a **withdrawal cap** — at most e.g. 200 CHF (= `20_000_000` Millirappen) may be withdrawn per
-  calendar month, computed from the booking history you exposed in Exercise 02;
-- a **bonus interest rate** the other accounts do not get;
-- a **minimum balance** that must remain on the account.
-
-### 4. Give the hierarchy a shared abstract operation
-
-Add something to `Account` that every subtype must answer, so the abstract class is abstract for a
-reason beyond "cannot be instantiated". Suggestions:
-
-```java
-public abstract String getAccountType();   // "Sparkonto", "Lohnkonto", "Promo-Jugendsparkonto"
-```
-
-or, more interesting:
-
-```java
-public abstract long applyInterest(Scheduled date) throws ...;  // books the interest, returns it
-```
-
-If you choose `applyInterest`, each subtype books an `INTEREST`/`ZINS` booking with its own rate,
-and `Bank` can run it over **all** accounts with a single loop — no type checks.
-
-### 5. Keep `Bank` polymorphic
-
-`Bank` must not change much, and specifically must not learn about the new types. Verify that:
-
-- `getBalance()` still sums over `Account::getBalance` and returns the right total for a mixed bank;
-- `top5HighestBalances()` / `top5LowestBalances()` work across mixed types;
-- a `SalaryAccount` in overdraft (negative balance) correctly drags the bank total down and shows up
-  in `top5LowestBalances()`.
-
-If you added `applyInterest` in task 4, add `Bank.applyInterestToAll(Scheduled date)` and note how
-short it is.
-
-## Discussion questions
-
-- `SavingsAccount.withdraw(...)` **narrows** what the method accepts: calls that `Account` would
-  have honoured are now rejected. Does that violate the **Liskov Substitution Principle**? Is
-  `Account` an honest abstraction if some subclasses refuse valid-looking requests?
-- `Account`'s fields are `private`, so subclasses must go through `getBalance()`. Would `protected`
-  fields be more convenient? What would you give up?
-- `PromoYouthSavingsAccount extends SavingsAccount` is inheritance for **code reuse**. When does
-  that turn into a problem, and what is the alternative? (Keywords: composition over inheritance,
-  strategy pattern.)
-- Should `Account` be an abstract class or an interface (plus a shared base)? What does the abstract
-  class buy you here?
-
-## Out of scope for this exercise
-
-- `AccountFactory` — Exercise 04.
-- Making `Bank` a singleton — Exercise 05.
-- HTTP, DTOs, persistence.
-
-## Acceptance criteria
-
-- [ ] `SalaryAccount` and `PromoYouthSavingsAccount` exist under `ch.bbw.accounts`.
-- [ ] `SalaryAccount` honours its `creditLimit` on withdrawal and rejects a positive limit.
-- [ ] `PromoYouthSavingsAccount` has at least one documented rule of its own.
-- [ ] `Account` declares at least one abstract operation the subtypes implement.
-- [ ] `Bank` contains **no** `instanceof` and no cast to a concrete account type.
-- [ ] `./mvnw test` passes, including boundary tests for every subtype.
-
-## Stretch goals (optional)
-
-- Make `Account` a `sealed` class permitting exactly the three subtypes (Java 21) and discuss what
-  that changes for `switch` pattern matching.
-- Add a monthly fee (`Kontoführungsgebühr`) that only `SalaryAccount` charges, booked as a negative
-  booking with text `"Gebühr"`.
-- Add `toString()` to each account type and use it in the bank statement.
+## Freiwillige Zusatzaufgaben
+`sealed`-Hierarchie; monatliche Kontogebühr; hilfreiche `toString()`-Ausgaben.

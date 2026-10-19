@@ -13,15 +13,37 @@ public class Bank {
 
     private final TreeMap<String, Account> accounts;
     private final AccountFactory accountFactory;
-    private static final Bank INSTANCE = new Bank();
-
-    public Bank() {
-        accounts = new TreeMap<>();
-        accountFactory = new AccountFactory();
+    /** Holder: lazy und durch JVM-Klasseninitialisierung threadsicher; kein Lock pro Zugriff.
+     * Eager wäre threadsicher aber nicht lazy; synchronized lazy sperrt jeden Aufruf.
+     * Double-checked locking ohne volatile wäre wegen Sichtbarkeits-/Reorderingproblemen falsch.
+     * Pro Singleton: eine Bank, zentraler Zugang und ein gemeinsamer ID-Zähler.
+     * Contra: versteckte globale Abhängigkeit, veränderbarer globaler Zustand, schwierige Tests,
+     * Lebensdauer bis zum JVM-Ende; in mehreren Server-JVMs gibt es trotzdem mehrere Instanzen.
+     */
+    private static final class Holder {
+        private static final Bank INSTANCE = new Bank(new AccountFactory());
     }
 
+    private Bank() { this(new AccountFactory()); }
+
+    /* Alternative für Dependency Injection und Tests, keine öffentliche No-Arg-Erzeugung. */
+    Bank(AccountFactory factory) {
+        accounts = new TreeMap<>();
+        accountFactory = java.util.Objects.requireNonNull(factory);
+    }
+
+    /** Test-Workaround gegen globalen veränderbaren Zustand; kein gutes Produktionsdesign. */
+    public synchronized void resetForTests() { accounts.clear(); }
+
     public static Bank getInstance(){
-        return INSTANCE;
+        return Holder.INSTANCE;
+    }
+
+    /** Rekonstruktion der Konten beim Serverstart; IDs bleiben erhalten. */
+    public synchronized void restoreAccount(String id, long creditLimit, List<ch.bbw.Booking> history) {
+        Account account = accountFactory.restore(id, creditLimit);
+        history.forEach(account::restoreBooking);
+        accounts.put(id, account);
     }
 
     public String createSavingsAccount() {
