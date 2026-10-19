@@ -1,6 +1,7 @@
 package ch.bbw.web;
 
 import ch.bbw.Scheduled;
+import jakarta.validation.Valid;
 import ch.bbw.web.BankDto.*;
 import ch.bbw.exceptions.InvalidAmountException;
 import ch.bbw.exceptions.InvalidDateException;
@@ -28,7 +29,7 @@ public class BankController {
 
     @PostMapping("/accounts/salary")
     @ResponseStatus(HttpStatus.CREATED)
-    public IdResponse createSalary(@RequestBody SalaryRequest request) {
+    public IdResponse createSalary(@Valid @RequestBody SalaryRequest request) {
         return new IdResponse(service.salary(request.creditLimit()));
     }
 
@@ -61,14 +62,14 @@ public class BankController {
     }
 
     @PostMapping("/accounts/{id}/deposit")
-    public BalanceResponse deposit(@PathVariable String id, @RequestBody TransactionRequest request)
+    public BalanceResponse deposit(@PathVariable String id, @Valid @RequestBody TransactionRequest request)
             throws InvalidAmountException, InvalidDateException {
         return new BalanceResponse(service.deposit(id, date(request.date()), request.amount(),
                 label(request.text(), "Einzahlung")));
     }
 
     @PostMapping("/accounts/{id}/withdraw")
-    public BalanceResponse withdraw(@PathVariable String id, @RequestBody TransactionRequest request)
+    public BalanceResponse withdraw(@PathVariable String id, @Valid @RequestBody TransactionRequest request)
             throws InvalidAmountException, InvalidDateException {
         return new BalanceResponse(service.withdraw(id, date(request.date()), request.amount(),
                 label(request.text(), "Auszahlung")));
