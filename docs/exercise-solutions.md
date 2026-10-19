@@ -48,3 +48,23 @@ CORS erlaubt http://localhost:5173.
 liefert 404, ungültige Beträge und Datumsangaben 400.
 Der Backend-Stand nutzt In-Memory-Konten; die H2/JPA-Persistierung
 und ein Frontend sind separate Ausbaustufen.
+
+
+## Sprints 9–12 – Persistenz, Validierung, Tests, Architektur
+Konten und Buchungen werden als JPA-Entities `StoredAccount` und `StoredBooking`
+mit einer One-to-Many-Beziehung in H2 persistiert. Beim Booten rekonstruiert
+`BankService` die Domänenkonten und Buchungshistorien. Die `AccountFactory`
+setzt den ID-Zähler mindestens auf die höchste wiederhergestellte ID plus eins.
+`@Transactional` schützt die JDBC-Transaktionen; ausserhalb der Datenbank
+bleibt der Singleton ein Legacy-Domainmodell und kein Mehrinstanz-Produktionssystem.
+
+Eingaben werden mittels `@Valid`, `@Positive` und `@Max(0)` geprüft.
+Der Exception-Handler übersetzt ungültige Eingaben in HTTP 400 und fehlende Konten
+in HTTP 404. Der Controller wird mit MockMvc auf HTTP-Ebene getestet.
+
+Spring verwendet Constructor Injection und Singleton-Beans pro ApplicationContext.
+Damit ist der Scope klar, Tests können einen eigenen Kontext aufbauen und Abhängigkeiten
+lassen sich leichter ersetzen. Ein statisches Singleton wie `Bank.getInstance()`
+hängt dagegen global an der JVM und erschwert Austausch und Tests.
+Die `AccountFactory` erzeugt fachliche Konten, während Spring die Infrastruktur
+(`BankService`, Repository, Controller) verwaltet: Beide Verantwortlichkeiten ergänzen sich.
