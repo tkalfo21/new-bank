@@ -43,7 +43,7 @@ Stand: 19.10.2026. Die Änderungen liegen im Branch `complete-bank-exercises`.
 ## Weitere Erweiterungen aus `docs/exercises/start.md`
 - [x] Dauerhafte Speicherung von Konten/Buchungen über JPA (Sprint 9).
 - [x] Bean Validation für Transaktionsbetrag und Kreditlimite (Sprint 10).
-- [ ] Zusätzliche persistenzbezogene Integrations-/Neustarttests (Sprint 11).
+- [x] Persistenz-Rekonstruktion und API-Validierung mit Integrationstests (Sprint 11).
 - [x] Architekturgespräch zu Spring-Bean-Scopes (Sprint 12; siehe `docs/exercise-solutions.md`).
 
 ### Testen
