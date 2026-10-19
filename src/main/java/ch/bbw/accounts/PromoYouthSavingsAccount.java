@@ -1,65 +1,29 @@
 package ch.bbw.accounts;
-
-
+import ch.bbw.Booking;
 import ch.bbw.Scheduled;
 import ch.bbw.exceptions.InvalidAmountException;
 import ch.bbw.exceptions.InvalidDateException;
+import java.time.Instant;
+import java.time.YearMonth;
+import java.time.ZoneOffset;
 
 /**
- * Sparkonto.
- *
- * @author Luigi Cavuoti, lro@gmx.ch
- * @version 1.1
+ * Jugendsparkonto: erbt das Überzugsverbot des Sparkontos.
+ * Eigene Regel: maximal CHF 200 (20_000_000 Millirappen)
+ * Auszahlungen pro UTC-Kalendermonat.
  */
-public class PromoYouthSavingsAccount extends Account
-{
-	/**
-	 * Initialisiert ein Sparkonto
-	 *
-	 * @param id die Kontonummer
-	 */
-	public PromoYouthSavingsAccount(String id)
-	{
-		super(id);
-	}
-
-    /**
-     * Zahlt den Betrag ein
-     * 
-     *  @param date
-     *  @param amount
-     *  @param text
-     * 
-     *  @return new balance
-     */
-
-
-    @Override
-    public long deposit(Scheduled date, long amount, String text) throws InvalidAmountException, InvalidDateException {
-        long bonus = amount / 100;
-        amount = amount + bonus;
-
-        return super.deposit(date, amount, text);
+public class PromoYouthSavingsAccount extends SavingsAccount {
+    public static final long MONTHLY_WITHDRAWAL_LIMIT = 20_000_000L;
+    public PromoYouthSavingsAccount(String id) { super(id); }
+    @Override public String getAccountType() { return "PromoYouthSavingsAccount"; }
+    @Override public long withdraw(Scheduled date, long amount, String text) throws InvalidAmountException, InvalidDateException {
+        validate(date, amount);
+        YearMonth month = YearMonth.from(date.toInstant().atZone(ZoneOffset.UTC));
+        long withdrawn = getBookings().stream().filter(b -> b.amount() < 0)
+                .filter(b -> YearMonth.from(Instant.ofEpochMilli(b.date()).atZone(ZoneOffset.UTC)).equals(month))
+                .mapToLong(Booking::amount).map(Math::abs).sum();
+        if (amount > MONTHLY_WITHDRAWAL_LIMIT - withdrawn)
+            throw new InvalidAmountException("Monatliche Auszahlungslimite CHF 200 überschritten");
+        return super.withdraw(date, amount, text);
     }
-	/**
-	 * Hebt den gegebenen Betrag vom Konto ab.
-	 *
-	 * @param date das Transaktionsdatum
-	 * @param amount der abzuhebende Betrag
-	 *
-	 * @return new balance
-	 */
-	@Override
-	public long withdraw(Scheduled date, long amount) throws InvalidAmountException, InvalidDateException {
-		if (getBalance() < amount){
-			throw new InvalidAmountException("Amount is greater than balance");}
-        if (amount > 200){
-            throw new InvalidAmountException("Amount too large for a Youth Savings Account. You may not withdraw over 200.");
-        }
-        if (amount < 100){
-            throw new InvalidAmountException("Amount too small for a Youth Savings Account. You may not withdraw less than 100.");
-        }
-
-        return super.withdraw(date, amount);
-}
 }
