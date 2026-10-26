@@ -5,14 +5,14 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.UnsupportedTemporalTypeException;
 
 /**
- * A class to represent a scheduled date.
+ * Klasse zur Darstellung eines geplanten Datums.
  * @author lro@gmx.ch
  * @version 1.0
  */
 public class Scheduled {
 
     /**
-     * The milliseconds until the date is due. Negative values mean that the date is past due.
+     * Millisekunden bis zum Termin. Negative Werte bedeuten, dass der Termin vergangen ist.
      */
     private long millisecondsUntilDue;
     public Scheduled(long millisecondsUntilDue) {
@@ -20,32 +20,32 @@ public class Scheduled {
     }
 
     /**
-     * Checks if the transaction date is not in the past.
-     * @return true if the transaction date is not in the past.
+     * Prüft, ob das Transaktionsdatum vergangen ist.
+     * @return Wahr, wenn das Transaktionsdatum bereits vergangen ist.
      */
     public boolean isPastDue() {
         return millisecondsUntilDue < 0;
     }
 
     /**
-     * Creates a new Scheduled date with the current instant.
-     * @return a new Scheduled date with the current instant.
+     * Erstellt ein geplantes Datum für den aktuellen Zeitpunkt.
+     * @return Ein geplantes Datum für den aktuellen Zeitpunkt.
      */
     public static Scheduled now() {
         return new Scheduled(0);
     }
 
     /**
-     * Converts the Scheduled date to a unix timestamp.
-     * @return the unix timestamp
+     * Wandelt das Datum in einen Unix-Zeitstempel um.
+     * @return Der Unix-Zeitstempel
      */
     public long toUnix(){
         return toInstant().toEpochMilli();
     }
 
     /**
-     * Converts the Scheduled date to an Instant.
-     * @return the Instant
+     * Wandelt das Datum in einen Instant um.
+     * @return Der Zeitpunkt
      */
     public Instant toInstant(){
 
@@ -53,10 +53,10 @@ public class Scheduled {
     }
 
     /**
-     * Adds a duration to the Scheduled date.
-     * @param duration the duration to add
-     * @param unit the unit of the duration
-     * @return the Scheduled date
+     * Addiert eine Zeitspanne zum geplanten Datum.
+     * @param duration Die zu addierende Zeitspanne
+     * @param unit Die Zeiteinheit
+     * @return Das geplante Datum
      */
     public Scheduled plus(long duration, ChronoUnit unit){
             return switch (unit) {
@@ -68,7 +68,7 @@ public class Scheduled {
                 case WEEKS -> plusWeeks(duration);
                 case MONTHS    -> plusMonths(duration);
                 case YEARS     -> plusYears(duration);
-                default -> throw new UnsupportedTemporalTypeException("Unsupported unit: " + unit + "\nI guess you have to implement it yourself ;)");
+                default -> throw new UnsupportedTemporalTypeException("Nicht unterstützte Zeiteinheit: " + unit + "\nDiese Zeiteinheit muss noch implementiert werden.");
             };
     }
 
@@ -113,10 +113,10 @@ public class Scheduled {
     }
 
     /**
-     * Subtracts a duration from the Scheduled date.
-     * @param duration the duration to subtract
-     * @param unit the unit of the duration
-     * @return the Scheduled date
+     * Zieht eine Zeitspanne vom geplanten Datum ab.
+     * @param duration Die abzuziehende Zeitspanne
+     * @param unit Die Zeiteinheit
+     * @return Das geplante Datum
      */
     public Scheduled minus(long duration, ChronoUnit unit){
         return switch (unit) {
@@ -128,7 +128,7 @@ public class Scheduled {
             case WEEKS -> minusWeeks(duration);
             case MONTHS    -> minusMonths(duration);
             case YEARS     -> minusYears(duration);
-            default -> throw new UnsupportedTemporalTypeException("Unsupported unit: " + unit + "\nI guess you have to implement it yourself ;)");
+            default -> throw new UnsupportedTemporalTypeException("Nicht unterstützte Zeiteinheit: " + unit + "\nDiese Zeiteinheit muss noch implementiert werden.");
         };
     }
 
@@ -173,8 +173,8 @@ public class Scheduled {
     }
 
     /**
-     * Converts the Scheduled date to a String.
-     * @return the String representation of the Scheduled date
+     * Wandelt das geplante Datum in Text um.
+     * @return Textdarstellung des geplanten Datums
      */
     @Override
     public String toString() {

@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SalaryAccountTests {
         @Test
-        @DisplayName("CreditLimit muss Null oder Negativ sein.")
+        @DisplayName("Die Kreditlimite muss null oder negativ sein.")
         void creditLimitMustBeZeroOrNegative() {
             assertThrows(
                     IllegalArgumentException.class,
@@ -21,7 +21,7 @@ public class SalaryAccountTests {
         }
 
         @Test
-        @DisplayName("CreditLimit Null verhält sich wie SavingsAccount.")
+        @DisplayName("Eine Kreditlimite von null verhindert Überzüge wie beim Sparkonto.")
         void creditLimitZeroBehavesLikeSavingsAccount() throws InvalidDateException, InvalidAmountException {
             SalaryAccount account = new SalaryAccount("P-1000", 0);
 
@@ -70,7 +70,7 @@ public class SalaryAccountTests {
         }
 
         @Test
-        @DisplayName("Balance kann auch negativ werden.")
+        @DisplayName("Der Saldo kann auch negativ werden.")
         void balanceCanBecomeNegative() throws InvalidDateException, InvalidAmountException {
             SalaryAccount account = new SalaryAccount("P-1000", -500);
 
@@ -82,7 +82,7 @@ public class SalaryAccountTests {
         }
 
         @Test
-        @DisplayName("Getter funktioniert bei CreditLimit")
+        @DisplayName("Die Kreditlimite wird korrekt zurückgegeben")
         void getCreditLimitReturnsCorrectLimit() {
             SalaryAccount account = new SalaryAccount("P-1000", -500);
 

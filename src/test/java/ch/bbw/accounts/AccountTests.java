@@ -17,7 +17,7 @@ public class AccountTests {
 
     @Test
     @DisplayName(
-            "New account has no bookings and balance is zero"
+            "Neues Konto hat keine Buchungen und Saldo null"
     )
     public void testInitialization() {
 
@@ -32,7 +32,7 @@ public class AccountTests {
 
     @Test
     @DisplayName(
-            "Deposit creates a positive booking"
+            "Einzahlung erzeugt eine positive Buchung"
     )
     public void testDeposit() throws Exception {
 
@@ -71,7 +71,7 @@ public class AccountTests {
 
     @Test
     @DisplayName(
-            "Withdraw creates a negative booking"
+            "Auszahlung erzeugt eine negative Buchung"
     )
     public void testWithdraw() throws Exception {
 
@@ -117,7 +117,7 @@ public class AccountTests {
 
     @Test
     @DisplayName(
-            "Balance equals sum of bookings"
+            "Saldo entspricht der Summe der Buchungen"
     )
     public void testBalance() throws Exception {
 
@@ -161,7 +161,7 @@ public class AccountTests {
 
     @Test
     @DisplayName(
-            "Booking list cannot be modified"
+            "Buchungsliste ist nicht veränderbar"
     )
     public void testBookingsAreReadOnly()
             throws Exception {
@@ -192,7 +192,7 @@ public class AccountTests {
 
     @Test
     @DisplayName(
-            "Invalid amount creates no booking"
+            "Ungültiger Betrag erzeugt keine Buchung"
     )
     public void testInvalidAmount() {
 
@@ -220,7 +220,7 @@ public class AccountTests {
 
     @Test
     @DisplayName(
-            "Past date creates no booking"
+            "Vergangenes Datum erzeugt keine Buchung"
     )
     public void testInvalidDate() {
 
@@ -254,7 +254,7 @@ public class AccountTests {
     }
 
     @Test
-    @DisplayName("Print account statement")
+    @DisplayName("Kontoauszug ausgeben")
     public void testPrint() throws Exception {
 
         Account account =
@@ -308,7 +308,7 @@ public class AccountTests {
 
     @Test
     @DisplayName(
-            "Print monthly account statement"
+            "Monatlichen Kontoauszug ausgeben"
     )
     public void testMonthlyPrint() {
         // Optionales Stretch Goal.

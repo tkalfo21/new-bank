@@ -3,17 +3,19 @@ import ch.bbw.Scheduled;
 import ch.bbw.accounts.Account;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BankTests {
+    @BeforeEach void reset() { Bank.getInstance().resetForTests(); }
 
     @Test
-    @DisplayName("Constructor Test, creates two SavingsAccounts")
+    @DisplayName("Erzeugt zwei Sparkonten")
     public void testCreate() throws Exception {
-        Bank bank = new Bank();
+        Bank bank = Bank.getInstance();
 
         String id1 = bank.createSavingsAccount();
         String id2 = bank.createSavingsAccount();
@@ -27,9 +29,9 @@ public class BankTests {
     }
 
     @Test
-    @DisplayName("Simple deposit on Bank-SavingsAccount should work")
+    @DisplayName("Einzahlung auf ein Sparkonto funktioniert")
     public void testDeposit() throws Exception {
-        Bank bank = new Bank();
+        Bank bank = Bank.getInstance();
 
         String id = bank.createSavingsAccount();
 
@@ -49,9 +51,9 @@ public class BankTests {
     }
 
     @Test
-    @DisplayName("Simple withdraw on Bank-SavingsAccount should work")
+    @DisplayName("Auszahlung von einem Sparkonto funktioniert")
     public void testWithdraw() throws Exception {
-        Bank bank = new Bank();
+        Bank bank = Bank.getInstance();
 
         String id = bank.createSavingsAccount();
 
@@ -74,9 +76,9 @@ public class BankTests {
     }
 
     @Test
-    @DisplayName("Print account statement")
+    @DisplayName("Kontoauszug ausgeben")
     public void testPrint() throws Exception {
-        Bank bank = new Bank();
+        Bank bank = Bank.getInstance();
 
         String id = bank.createSavingsAccount();
 
@@ -96,9 +98,9 @@ public class BankTests {
     }
 
     @Test
-    @DisplayName("Monthly print is optional")
+    @DisplayName("Monatlicher Kontoauszug ist freiwillig")
     public void testMonthlyPrint() throws Exception {
-        Bank bank = new Bank();
+        Bank bank = Bank.getInstance();
 
         String id = bank.createSavingsAccount();
 
@@ -113,9 +115,9 @@ public class BankTests {
     }
 
     @Test
-    @DisplayName("Tests total balance of two accounts")
+    @DisplayName("Prüft den Gesamtsaldo zweier Konten")
     public void testBalance() throws Exception {
-        Bank bank = new Bank();
+        Bank bank = Bank.getInstance();
 
         String id1 = bank.createSavingsAccount();
         String id2 = bank.createSavingsAccount();
@@ -138,9 +140,9 @@ public class BankTests {
     }
 
     @Test
-    @DisplayName("Tests the List of the top 5 balances")
+    @DisplayName("Prüft die fünf höchsten Kontostände")
     public void testTop5() throws Exception {
-        Bank bank = new Bank();
+        Bank bank = Bank.getInstance();
 
         for (int i = 1; i <= 6; i++) {
             String id = bank.createSavingsAccount();
@@ -170,9 +172,9 @@ public class BankTests {
     }
 
     @Test
-    @DisplayName("Tests the List of the bottom 5 balances")
+    @DisplayName("Prüft die fünf niedrigsten Kontostände")
     public void testBottom5() throws Exception {
-        Bank bank = new Bank();
+        Bank bank = Bank.getInstance();
 
         for (int i = 1; i <= 6; i++) {
             String id = bank.createSavingsAccount();

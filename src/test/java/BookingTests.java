@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BookingTests {
 
     @Test
-    @DisplayName("Construct Simple Booking, should work")
+    @DisplayName("Erstellt eine einfache Buchung")
     public void testInitialization() {
 
         Booking booking =
@@ -29,7 +29,7 @@ public class BookingTests {
 
     @Test
     @DisplayName(
-            "Not a real test, it prints a list of bookings"
+            "Gibt eine Liste von Buchungen aus"
     )
     public void testPrint() {
 

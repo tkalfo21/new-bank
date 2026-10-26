@@ -1,176 +1,70 @@
-# Exercise 02 — Bookings
+# Übung 02 – Buchungen
 
-> **Sprint 2** of `start.md`. Numbering note: `01-Exercise-build-the-be.md` covers the Spring Boot
-> extension (Sprints 6–11) and comes *after* this exercise and 03–05.
+**Sprint 2.** Ziel: `Booking` als eigenständigen Bestandteil des Bankmodells verwenden. Jede Buchung erhält einen Text, die Buchungshistorie wird lesbar und der Saldo wird daraus berechnet.
 
-## Goal
+## Ausgangslage
+`Account` verarbeitet Ein- und Auszahlungen. Auszahlungen werden als negative Beträge gespeichert. Ein separater Saldo wäre eine zweite Wahrheitsquelle und kann von der Buchungsliste abweichen. Zudem müssen die Zeitangaben einheitlich sein.
 
-Make `Booking` a first-class part of the domain: give a booking a **text**, expose the booking
-history on an `Account`, and **derive the balance from the bookings** instead of keeping it as a
-separate field.
+Lies vor Beginn `Booking.java`, `Account.java` und `Scheduled.java`.
 
-This is the first exercise where you change an existing design rather than add to an empty project.
-The point is to feel the difference between *storing* a value and *deriving* it.
+## Vorgehen nach TDD
+1. Schreibe zuerst einen Test für genau eine Regel.
+2. Führe den Test aus und kontrolliere, dass er zunächst fehlschlägt.
+3. Implementiere die kleinste passende Änderung.
+4. Führe alle Tests erneut aus und überarbeite den Code bei Bedarf.
 
-## Prerequisites / current state
-
-Read these files before you start:
-
-- `src/main/java/ch/bbw/Booking.java`
-- `src/main/java/ch/bbw/accounts/Account.java`
-- `src/main/java/ch/bbw/Scheduled.java`
-
-### What already exists
-
-- `Booking` is a Java **record** with two components: `date` (long) and `amount` (long, in
-  Millirappen).
-- `Account` already keeps a `List<Booking> bookings` and appends to it on every `deposit()` and
-  `withdraw()`. A withdrawal is stored as a booking with a **negative** amount.
-- `Account` also keeps a separate `private long balance` field, which it increments/decrements in
-  parallel with the booking list.
-
-### What is missing / wrong
-
-1. **No `text`.** A booking has no description, so a statement cannot say *why* money moved.
-2. **The booking list is write-only.** `Account` has no getter for `bookings` — nothing outside the
-   class can ever read the history that is being so carefully maintained.
-3. **Balance is duplicated state.** `balance` and `bookings` both encode the same information. Two
-   sources of truth for one fact is a bug waiting to happen: any future code path that adds a
-   booking without touching `balance` (or vice versa) silently corrupts the account.
-4. **The date semantics are inconsistent.** `Booking`'s Javadoc says *"Banktage seit 1.1.1970"*
-   (bank days since 1970), but `Account` actually stores `date.toUnix()`, which is **epoch
-   milliseconds**. One of the two has to give.
-
-## Work test-first (TDD)
-
-Task 1 below *is* the test suite for this exercise — it describes the target API (`Booking(date,
-amount, text)`, `Account.getBookings()`, a derived `getBalance()`) before any of it exists in the
-code. Write those tests first:
-
-1. Write (or extend) a test for one piece of behaviour from the list in Task 1.
-2. Run `./mvnw test` and confirm it fails — for the right reason (assertion failure, or the code
-   doesn't compile yet because the API doesn't exist). This is the **red** step; don't skip it, it's
-   how you know the test actually tests something.
-3. Implement just enough of Tasks 2–7 to make that test pass (**green**).
-4. Refactor if needed, keeping all tests green, then move to the next piece of behaviour.
-
-Do not write `Booking`'s new constructor, `getBookings()`, or the derived `getBalance()` before a
-failing test demands them.
-
-## Tasks
+## Aufgaben
 
 ### 1. Tests
+Ergänze `BookingTests.testInitialization()`, `BookingTests.testPrint()`, `AccountTests.testDeposit()`, `testWithdraw()`, `testPrint()` und `testMonthlyPrint()`.
 
-Implement the stubs that currently just call `fail("ToDo")`:
+Prüfe insbesondere:
+- Neues Konto: keine Buchungen, Saldo 0.
+- Einzahlung: genau eine positive Buchung mit richtigem Text.
+- Auszahlung: negative Buchung.
+- Saldo: Summe aller Buchungsbeträge.
+- `getBookings()`: von aussen nicht veränderbar.
+- Ungültiger Betrag oder vergangenes Datum: Ausnahme, keine zusätzliche Buchung, Saldo unverändert.
 
-- `src/test/java/BookingTests.java` — `testInitialization()`, `testPrint()`.
-- `src/test/java/ch/bbw/accounts/AccountTests.java` — `testDeposit()`, `testWithdraw()`,
-  `testPrint()`, `testMonthlyPrint()`.
+### 2. Buchungen erweitern
+Verwende `Booking(long date, long amount, String text)`. Entferne bei einem Java-`record` unnötige selbstgeschriebene Getter. Entscheide, ob `null` und leere Texte abgewiesen oder durch Standardtexte ersetzt werden; dokumentiere die Wahl.
 
-At minimum cover:
+### 3. Buchungstexte durchreichen
+`Account.deposit(...)`, `withdraw(...)` und die passenden Methoden in `Bank` akzeptieren einen Text. Bestehende Signaturen bleiben als Überladungen mit einem Standardtext erhalten.
 
-- a new account has an empty booking list and a balance of `0`;
-- a deposit appends exactly one booking with a **positive** amount and the given text;
-- a withdrawal appends exactly one booking with a **negative** amount;
-- the balance after *n* operations equals the sum of the booking amounts;
-- `getBookings()` cannot be used to modify the account (expect
-  `UnsupportedOperationException`);
-- a rejected operation (amount `<= 0`, past-due date) adds **no** booking and leaves the balance
-  unchanged.
+### 4. Buchungshistorie bereitstellen
+Ergänze `List<Booking> getBookings()`. Gib eine unveränderliche Ansicht beziehungsweise Kopie zurück, damit Aufrufer keine Buchungen direkt hinzufügen können.
 
-That last one matters: make sure the exception is thrown *before* the booking is appended.
-
-Yes, most of these will fail to even compile at first — `Booking` doesn't take a `text` yet and
-`getBookings()` doesn't exist. That's the point: the test names the API you're about to build.
-
-### 2. Add a text to `Booking`
-
-Extend the record to `Booking(long date, long amount, String text)`.
-
-While you are in the file: the record currently declares an empty compact constructor and manually
-overrides `date()` and `amount()` with bodies that just return the field. A record generates both
-for you. Delete the redundant code and keep the Javadoc.
-
-Decide what happens when `text` is `null` or blank — reject it in the compact constructor, or
-default it to something like `"Einzahlung"` / `"Auszahlung"`. Write down your choice.
-
-### 3. Thread the text through `Account` and `Bank`
-
-`Account.deposit(...)` / `withdraw(...)` and the corresponding `Bank` methods need to accept a text
-and pass it on. Keep the existing two-argument signatures as convenience overloads that supply a
-default text, so you do not have to touch every call site at once.
-
-### 4. Expose the booking history
-
-Add `List<Booking> getBookings()` to `Account`.
-
-Return an **unmodifiable view** (`List.copyOf(...)` or `Collections.unmodifiableList(...)`), not the
-internal list. If you hand out the real list, any caller can add a booking behind the account's back
-— which is exactly the invariant you are about to establish in task 5.
-
-### 5. Derive the balance from the bookings
-
-Remove the `balance` field. Reimplement:
-
+### 5. Saldo aus Buchungen berechnen
+Entferne das separate Feld `balance`. Beispiel:
 ```java
 public long getBalance() {
-    return bookings.stream()
-                   .mapToLong(Booking::amount)
-                   .sum();
+    return bookings.stream().mapToLong(Booking::amount).sum();
 }
 ```
+Einzahlung und Auszahlung fügen zuerst eine Buchung hinzu und geben danach den neuen Saldo zurück. Prüfe den Überzugsschutz von `SavingsAccount`.
 
-Now there is exactly one source of truth. `deposit()` and `withdraw()` still need to return the new
-balance — have them append the booking and then return `getBalance()`.
+### 6. Zeitangaben vereinheitlichen
+Bevorzugt wird ein Unix-Zeitstempel **in Millisekunden**. Alternativ wären Banktage seit dem 1.1.1970 denkbar. Implementierung und JavaDoc müssen dieselbe Bedeutung verwenden.
 
-Watch out for `SavingsAccount.withdraw(...)`: it calls `getBalance()` *before* delegating to
-`super.withdraw(...)`. Verify that overdraft protection still behaves correctly after the change.
+### 7. Kontoauszug ausgeben
+Implementiere beispielsweise `printStatement()`: pro Buchung Datum, Betrag und Text sowie am Ende den Saldo. **Beträge sind Millirappen:** `123_456` entspricht CHF 1.23456.
 
-### 6. Fix the date semantics
+## Diskussionsfragen
+- Die Berechnung der Summe benötigt O(n). Wann wird das langsam? Wie könnten Zwischenspeicherung oder Snapshots helfen?
+- Warum eignet sich ein unveränderliches `record` für Buchungen?
+- Was schützt `final` bei einer Liste und was nicht?
 
-Pick one and make code and Javadoc agree:
+## Nicht Bestandteil dieser Übung
+Neue Kontotypen, Anpassungen an der Factory, HTTP und Datenbankpersistenz.
 
-- **Option A (recommended):** the booking date is a **Unix timestamp in milliseconds**. Update
-  `Booking`'s Javadoc to say so.
-- **Option B:** the booking date really is *bank days since 1.1.1970*. Then `Account` must convert
-  (`toUnix() / 86_400_000`) before constructing the `Booking`, and you lose the time of day.
+## Abnahmekriterien
+- [ ] `Booking` enthält Datum, Betrag und Text.
+- [ ] Kein separates Saldo-Feld; Saldo aus Buchungen.
+- [ ] Unveränderliche Buchungshistorie.
+- [ ] Einheitliche Datumssemantik.
+- [ ] Lesbarer Kontoauszug.
+- [ ] Die automatisierten Tests bestehen.
 
-### 7. Print a statement
-
-Add a method that renders the booking history as a readable account statement — for example
-`String printStatement()` on `Account`, one line per booking with date, amount and text, plus the
-closing balance.
-
-Format amounts for humans: the domain stores **Millirappen**, so `123_456` is `CHF 1.23456`. Decide
-where that formatting belongs (hint: not inside `Booking`).
-
-## Discussion questions
-
-- Deriving the balance is now O(n) in the number of bookings. When would that become a problem, and
-  what would you do about it? (Keywords: caching, snapshot balance, event sourcing.)
-- Why is `Booking` a `record` and not a normal class? What would break if bookings were mutable?
-- `Account.bookings` is `final`, but the list it points at is not. What does `final` actually
-  guarantee here?
-
-## Out of scope for this exercise
-
-- New account types — that is Exercise 03.
-- Changing `AccountFactory` — that is Exercise 04.
-- Anything HTTP or persistence related.
-
-## Acceptance criteria
-
-- [ ] `Booking` is a record with `date`, `amount` and `text`, and no redundant hand-written accessors.
-- [ ] `Account` has no `balance` field; `getBalance()` is computed from the bookings.
-- [ ] `getBookings()` returns a read-only view of the history.
-- [ ] Booking date semantics are consistent between code and Javadoc.
-- [ ] A statement can be printed with readable amounts.
-- [ ] `./mvnw test` passes; the `BookingTests` and `AccountTests` stubs are implemented, not deleted.
-
-## Stretch goals (optional)
-
-- `printStatement(int year, int month)` — filter the history to one month (see the
-  `testMonthlyPrint()` stub).
-- Give `Booking` a `type` (`DEPOSIT` / `WITHDRAWAL` / `FEE` / `INTEREST`) as an enum instead of
-  inferring it from the sign of `amount`. Which of the two designs do you prefer, and why?
-- Add a booking id or running number so two identical bookings on the same day can be told apart.
+## Freiwillige Zusatzaufgaben
+Monatsauszug `printStatement(int year, int month)`; Buchungstyp als Enum; Buchungsnummer zur Unterscheidung gleicher Buchungen.

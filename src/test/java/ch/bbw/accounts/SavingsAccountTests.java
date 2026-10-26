@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class SavingsAccountTests {
 
 	@Test
-	@DisplayName("Constructs a SavingsAccount and tests a simple deposit")
+	@DisplayName("Erstellt ein Sparkonto und prüft eine Einzahlung")
 	public void test() throws Exception {
 
 		SavingsAccount account = new SavingsAccount("S-1000");

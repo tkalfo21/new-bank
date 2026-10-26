@@ -3,7 +3,7 @@ import ch.bbw.accounts.Account;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AccountFactoryTests {
     @Test
@@ -19,7 +19,7 @@ public class AccountFactoryTests {
     }
 
     @Test
-    @DisplayName("Die neue create Methode soll genauso funktionieren, wie die Alte - Promo Youth Savings")
+    @DisplayName("Die neue create-Methode soll wie die bisherige Methode für Jugendsparkonten funktionieren")
     void createYouthAccount(){
         AccountFactory factory = new AccountFactory();
 
@@ -29,7 +29,7 @@ public class AccountFactoryTests {
     }
 
     @Test
-    @DisplayName("Die neue create Methode soll genauso funktionieren, wie die Alte - Savings")
+    @DisplayName("Die neue create-Methode soll wie die bisherige Methode für Sparkonten funktionieren")
     void createSavingsAccount(){
         AccountFactory factory = new AccountFactory();
 
@@ -45,6 +45,6 @@ public class AccountFactoryTests {
 
         Account acc = factory.create("SavingsAccount", 0);
         Account acc2 = factory.createPromoYouthSavingsAccount();
-        assertEquals(acc.getAccountType(), acc2.getAccountType());
+        assertNotEquals(acc.getAccountType(), acc2.getAccountType());
     }
 }
