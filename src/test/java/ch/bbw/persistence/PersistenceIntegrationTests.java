@@ -34,4 +34,32 @@ class PersistenceIntegrationTests {
             Bank.getInstance().resetForTests();
         }
     }
+
+    @Test void gespeichertesKontoHatDieRichtigeId() {
+        StoredAccount konto = new StoredAccount("S-4321");
+        assertEquals("S-4321", konto.getId());
+        assertTrue(konto.toBookings().isEmpty());
+    }
+
+    @Test void neuErzeugtesKontoHatKeineBuchungen() {
+        StoredAccount konto = new StoredAccount("Y-4321");
+        assertEquals(0, konto.toBookings().size());
+    }
+
+    @Test void gespeicherteBuchungKannZurueckgewandeltWerden() {
+        StoredAccount konto = new StoredAccount("S-4322");
+        ch.bbw.Booking original = new ch.bbw.Booking(1000, 500, "Lohn");
+        StoredBooking gespeichert = new StoredBooking(konto, original);
+        assertEquals(original, gespeichert.toBooking());
+    }
+
+    @Test void gespeicherteBuchungenBleibenInReihenfolge() throws Exception {
+        ch.bbw.accounts.SavingsAccount quelle = new ch.bbw.accounts.SavingsAccount("S-4323");
+        quelle.deposit(Scheduled.now(), 1000, "Erste");
+        quelle.deposit(Scheduled.now(), 2000, "Zweite");
+        StoredAccount ziel = new StoredAccount("S-4323");
+        ziel.replaceWith(quelle, 0);
+        assertEquals("Erste", ziel.toBookings().get(0).text());
+        assertEquals("Zweite", ziel.toBookings().get(1).text());
+    }
 }

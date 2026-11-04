@@ -54,4 +54,22 @@ public class BookingTests {
 
         assertEquals(2, bookings.size());
     }
+
+    @Test @DisplayName("Negative Beträge bleiben als Auszahlung erhalten")
+    void negativeBeträge() {
+        Booking buchung = new Booking(500L, -250L, "Auszahlung");
+        assertEquals(-250L, buchung.amount());
+    }
+
+    @Test @DisplayName("Buchungsdatum wird unverändert gespeichert")
+    void zeitstempel() {
+        assertEquals(1_700_000_000_000L,
+                new Booking(1_700_000_000_000L, 100L, "Test").date());
+    }
+
+    @Test @DisplayName("Leerer Buchungstext ist ungültig")
+    void leererText() {
+        assertThrows(IllegalArgumentException.class, () -> new Booking(0L, 1L, ""));
+        assertThrows(IllegalArgumentException.class, () -> new Booking(0L, 1L, " "));
+    }
 }

@@ -30,4 +30,34 @@ class BankValidationIntegrationTests {
                 .content("{\"amount\":-500}"))
                 .andExpect(status().isBadRequest()).andExpect(jsonPath("$.error").exists());
     }
+
+    @Test void kreditlimiteNullIstErlaubt() throws Exception {
+        mvc.perform(post("/accounts/salary").contentType(APPLICATION_JSON)
+                .content("{\"creditLimit\":0}"))
+                .andExpect(status().isCreated());
+    }
+
+    @Test void einzahlungMitBetragNullWirdAbgelehnt() throws Exception {
+        String json = mvc.perform(post("/accounts/savings"))
+                .andReturn().getResponse().getContentAsString();
+        String id = json.replaceAll(".*\\\"id\\\"\\s*:\\s*\\\"([^\\\"]+)\\\".*", "$1");
+        mvc.perform(post("/accounts/{id}/deposit", id).contentType(APPLICATION_JSON)
+                .content("{\"amount\":0}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test void ungueltigesDatumWirdAbgelehnt() throws Exception {
+        String json = mvc.perform(post("/accounts/savings"))
+                .andReturn().getResponse().getContentAsString();
+        String id = json.replaceAll(".*\\\"id\\\"\\s*:\\s*\\\"([^\\\"]+)\\\".*", "$1");
+        mvc.perform(post("/accounts/{id}/deposit", id).contentType(APPLICATION_JSON)
+                .content("{\"amount\":100,\"date\":\"kein-datum\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test void ungueltigesJsonWirdAbgelehnt() throws Exception {
+        mvc.perform(post("/accounts/salary").contentType(APPLICATION_JSON)
+                .content("{kaputt"))
+                .andExpect(status().isBadRequest());
+    }
 }

@@ -32,4 +32,20 @@ class BankControllerTests {
         assertEquals(HttpStatus.NOT_FOUND, new BankExceptionHandler()
                 .amount(new InvalidAmountException("Invalid bank id")).getStatusCode());
     }
+
+    @Test void jugendkontoWirdErzeugt() {
+        assertTrue(controller.createYouth().id().startsWith("Y-"));
+    }
+
+    @Test void lohnkontoMitKreditlimiteWirdErzeugt() {
+        assertTrue(controller.createSalary(new SalaryRequest(-500)).id().startsWith("P-"));
+    }
+
+    @Test void bankGesamtsaldoWirdBerechnet() throws Exception {
+        String eins = controller.createSavings().id();
+        String zwei = controller.createSavings().id();
+        controller.deposit(eins, new TransactionRequest(1000, null, "Erste"));
+        controller.deposit(zwei, new TransactionRequest(2000, null, "Zweite"));
+        assertEquals(3000, controller.totalBalance().balance());
+    }
 }

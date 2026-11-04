@@ -23,4 +23,10 @@ class SingletonTests {
         }
         assertEquals(0, bank.getBalance());
     }
+
+    @Test void singletonUndIsolierteBankSindVerschiedeneObjekte() {
+        Bank andereBank = new Bank(new AccountFactory(5000));
+        assertNotSame(Bank.getInstance(), andereBank);
+        assertSame(Bank.getInstance(), Bank.getInstance());
+    }
 }

@@ -55,4 +55,30 @@ class BankHttpIntegrationTests {
         mvc.perform(get("/accounts/non-existing"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test void sparkontoKannPerHttpErstelltWerden() throws Exception {
+        mvc.perform(post("/accounts/savings"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").isNotEmpty());
+    }
+
+    @Test void leeresKontoLiefertSaldoNull() throws Exception {
+        mvc.perform(get("/bank/balance"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.balance").value(0));
+    }
+
+    @Test void unbekanntesKontoLiefert404() throws Exception {
+        mvc.perform(get("/accounts/S-unbekannt"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test void beideRanglistenLiefernLeereArraysBeiLeeremBestand() throws Exception {
+        mvc.perform(get("/bank/top5/highest"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0]").doesNotExist());
+        mvc.perform(get("/bank/top5/lowest"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0]").doesNotExist());
+    }
 }

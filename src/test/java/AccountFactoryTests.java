@@ -47,4 +47,12 @@ public class AccountFactoryTests {
         Account acc2 = factory.createPromoYouthSavingsAccount();
         assertNotEquals(acc.getAccountType(), acc2.getAccountType());
     }
+
+    @Test
+    @DisplayName("Unbekannter Kontotyp wird abgewiesen")
+    void unbekannterTyp() {
+        AccountFactory factory = new AccountFactory();
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create("NichtVorhanden", 0));
+    }
 }

@@ -32,4 +32,23 @@ class FactoryContractTests {
             assertTrue(ids.add(account.getId()));
         }
     }
+
+    @Test void startwertDerKontonummer() {
+        AccountFactory factory = new AccountFactory(7000);
+        assertEquals("S-7000", factory.createSavingsAccount().getId());
+        assertEquals("Y-7001", factory.createPromoYouthSavingsAccount().getId());
+    }
+
+    @Test void unbekannterKontotyp() {
+        AccountFactory factory = new AccountFactory();
+        assertThrows(IllegalArgumentException.class, () -> factory.create("Unbekannt", 0));
+    }
+
+    @Test void kreditlimiteNurBeiLohnkonto() {
+        AccountFactory factory = new AccountFactory();
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create(AccountType.SAVINGS, -100));
+        assertThrows(IllegalArgumentException.class,
+                () -> factory.create(AccountType.PROMO_YOUTH, -100));
+    }
 }
