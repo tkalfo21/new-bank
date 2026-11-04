@@ -1,6 +1,6 @@
 # Fortschritt – new-bank
 
-Stand: 19.10.2026. Die Änderungen liegen im Branch `complete-bank-exercises`.
+Stand: 04.11.2026. Die Umsetzung liegt auf `main`. Die Testfälle und UML-Dokumentation wurden mit dem aktuellen Programm abgeglichen.
 
 ## Sprint 1 – Basis
 - [x] Kontoerstellung, Ein- und Auszahlung, Saldo.
@@ -58,3 +58,13 @@ Auf Windows (PowerShell): `./mvnw.cmd test` bzw. `./mvnw.cmd spring-boot:run`.
 Hinweis: Die API speichert Konten in `./data/newbank` (H2-Datei). Vor Produktivbetrieb
 braucht die Bank unter anderem persistente Transaktionen, sichere Authentisierung und
 transaktionssichere Konto-IDs.
+
+## Qualitätssicherung vom 04.11.2026
+- [x] Zusätzliche Anwendungsfalltests für UC-01 bis UC-04 angelegt (`BankUseCaseTests`).
+- [x] Grenz- und Fehlerfälle für Kontoarten ergänzt (`AccountBoundaryTests`).
+- [x] Sechs weitere HTTP-Integrationstests ergänzt (`BankApiUseCaseTests`).
+- [x] Monatsauszug ergänzt und bisherigen Platzhaltertest ersetzt.
+- [x] Klassendiagramm auf die tatsächlichen Java-Klassen angepasst.
+- [x] Fachliches Anwendungsfalldiagramm und vier überarbeitete Beschreibungen erstellt.
+- [x] Testfallübersicht in `docs/testfaelle.md` dokumentiert.
+- [ ] Rückmeldung der Lehrperson anhand ihrer detaillierten Bewertungsmatrix einholen.

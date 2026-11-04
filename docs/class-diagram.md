@@ -103,6 +103,6 @@ classDiagram
 | UC-03: Auszahlung tätigen | `Bank.withdraw()`, `Account.withdraw()`, Kontounterklassen |
 | UC-04: Kontoauszug erhalten | `Account.getBookings()`, `Account.printStatement()` |
 
-Die visuelle Modellierung des fachlichen Bankschalters ist im [Anwendungsfalldiagramm](use-case-diagram.puml) dokumentiert.
+Die visuelle Modellierung des fachlichen Bankschalters ist im [Anwendungsfalldiagramm](use-case-diagram.md) dokumentiert.
 
 **Abgrenzung:** Kundendaten, Bankmitarbeiterverwaltung und ein physischer Ausdruck sind Anforderungen auf Szenarioebene, aber aktuell nicht implementiert. Die Beträge werden als `long` in Millirappen gespeichert, nicht als `double`.

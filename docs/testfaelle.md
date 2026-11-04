@@ -26,6 +26,13 @@ Die folgende Übersicht dokumentiert die vorhandenen Tests. Sie ist **kein rück
 | T16 | REST | HTTP-Status und Buchungshistorie | `BankHttpIntegrationTests` |
 | T17 | REST | Eingabevalidierung | `BankValidationIntegrationTests` |
 | T18 | Datenbank | Rekonstruktion gespeicherter Konten und Buchungen | `PersistenceIntegrationTests` |
+| T19 | REST: UC-01 | Kontoeröffnung und Anfangssaldo über HTTP | `BankApiUseCaseTests` |
+| T20 | REST: UC-02 | Einzahlung und Buchungsdetails über HTTP | `BankApiUseCaseTests` |
+| T21 | REST: UC-03 | Kreditlimite und abgewiesene Auszahlung | `BankApiUseCaseTests` |
+| T22 | REST: UC-03 | Jugendsparlimite über HTTP | `BankApiUseCaseTests` |
+| T23 | REST: UC-04 | Unbekanntes Konto gibt HTTP 404 | `BankApiUseCaseTests` |
+| T24 | REST | Betrag null und fehlerhaftes Datum: HTTP 400 | `BankApiUseCaseTests` |
+| T25 | Kontoauszug | Buchungen eines Monats ohne Folgemonat | `AccountTests.testMonthlyPrint()` |
 
 ## Testdurchführung
 

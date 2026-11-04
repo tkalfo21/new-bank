@@ -59,6 +59,9 @@ Beispiel für eine Einzahlung:
 - `docs/exercises/` – Aufgaben der Sprints
 - `docs/scenarios/` – ursprüngliche Szenarien als PDF
 - `docs/use-cases/` – Anwendungsfälle
+- [Anwendungsfalldiagramm](docs/use-case-diagram.md) – vier Anwendungsfälle am Bankschalter
+- [Klassendiagramm](docs/class-diagram.md) – Klassen und Beziehungen des aktuellen Codes
+- [Testkonzept](docs/testfaelle.md) – Testfälle, Grenzwerte und Bezug zu den Anwendungsfällen
 - `docs/exercise-solutions.md` – Lösungen und Architekturentscheidungen
 - `TODO.md` – Bearbeitungsstand
 
