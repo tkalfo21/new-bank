@@ -1,63 +1,108 @@
 # Klassendiagramm – Bank
 
-## Beschreibung
+## Ausgangslage und Bezug zum Code
 
-Das Klassendiagramm wurde aus den Use Cases des Bank-Projekts abgeleitet.
+Die ursprüngliche Situation beschreibt eine Kundin oder einen Kunden am Bankschalter. Das Java-Projekt implementiert bisher **keine eigenen Klassen für Kunden oder Bankmitarbeiter**, sondern die fachliche Verarbeitung der Konten. Das folgende Diagramm zeigt daher die tatsächlich vorhandenen Java-Klassen und ihre Beziehungen.
 
-Die wichtigsten Klassen sind:
+## Klassendiagramm der Implementierung
 
-### Kunde
-Ein Kunde kann ein Konto eröffnen und einen Kontoauszug anfordern.
+```mermaid
+classDiagram
+    direction TB
+    class Bank {
+        -accounts
+        -accountFactory
+        +getInstance() Bank
+        +createSavingsAccount() String
+        +createPromoYouthSavingsAccount() String
+        +createSalaryAccount(long) String
+        +deposit(String, Scheduled, long, String) void
+        +withdraw(String, Scheduled, long, String) long
+        +getBalance(String) long
+        +getAccount(String) Account
+    }
+    class Account {
+        <<abstract>>
+        -String id
+        -bookings
+        +getId() String
+        +getBalance() long
+        +getBookings() List
+        +deposit(Scheduled, long, String) long
+        +withdraw(Scheduled, long, String) long
+        +printStatement() String
+        +getAccountType() String
+    }
+    class SavingsAccount {
+        +withdraw(Scheduled, long, String) long
+    }
+    class SalaryAccount {
+        -long creditLimit
+        +getCreditLimit() long
+        +withdraw(Scheduled, long, String) long
+    }
+    class PromoYouthSavingsAccount {
+        +MONTHLY_WITHDRAWAL_LIMIT long
+        +withdraw(Scheduled, long, String) long
+    }
+    class Booking {
+        <<record>>
+        +long date
+        +long amount
+        +String text
+    }
+    class Scheduled {
+        -long millisecondsUntilDue
+        +now() Scheduled
+        +isPastDue() boolean
+        +toUnix() long
+    }
+    class AccountFactory {
+        -AtomicLong nextAccountId
+        +create(AccountType, long) Account
+    }
+    class AccountType {
+        <<enumeration>>
+        SAVINGS
+        PROMO_YOUTH
+        SALARY
+    }
+    class BankController
+    class BankService
+    class StoredAccount
+    class StoredBooking
 
-Attribute:
-- name: String
-- kundenNr: int
+    Account <|-- SavingsAccount
+    Account <|-- SalaryAccount
+    SavingsAccount <|-- PromoYouthSavingsAccount
+    Bank "1" o-- "0..*" Account : verwaltet
+    Account "1" *-- "0..*" Booking : enthält
+    Bank --> AccountFactory : verwendet
+    AccountFactory --> AccountType : wählt
+    Account ..> Scheduled : prüft Datum
+    BankController --> BankService : ruft auf
+    BankService --> Bank : Fachlogik
+    BankService --> StoredAccount : speichert
+    StoredAccount "1" *-- "0..*" StoredBooking : enthält
+```
 
-Methoden:
-- kontoEroeffnen()
-- kontoauszugAnfordern()
+## Erklärung der Beziehungen
 
-### Konto
-Ein Konto besitzt eine Kontonummer und einen Saldo.
+- **Vererbung:** `Account` ist abstrakt. `SavingsAccount` verbietet Überzüge; `SalaryAccount` besitzt eine Kreditlimite; `PromoYouthSavingsAccount` erbt vom Sparkonto und begrenzt monatliche Auszahlungen.
+- **Komposition:** Die Buchungsliste gehört zum Konto. Der Saldo wird aus den Beträgen der Buchungen berechnet.
+- **Factory:** Die `AccountFactory` erzeugt passende Konten und vergibt eindeutige Nummern.
+- **Singleton:** `Bank.getInstance()` liefert die gemeinsame Instanz pro JVM.
+- **REST und Speicherung:** `BankController` nimmt HTTP-Anfragen entgegen, `BankService` verarbeitet sie, und die Persistenzklassen speichern Konten samt Buchungen.
 
-Attribute:
-- kontoNr: int
-- saldo: double
+## Verbindung zu den Anwendungsfällen
 
-Methoden:
-- einzahlen(betrag: double)
-- auszahlen(betrag: double)
-- kontoauszugErstellen()
+| Anwendungsfall | Zuständige Klassen und Methoden |
+|---|---|
+| UC-01: Konto eröffnen | `Bank.createSavingsAccount()`, `createSalaryAccount()`, `AccountFactory` |
+| UC-02: Einzahlung tätigen | `Bank.deposit()`, `Account.deposit()`, `Booking` |
+| UC-03: Auszahlung tätigen | `Bank.withdraw()`, `Account.withdraw()`, Kontounterklassen |
+| UC-04: Kontoauszug erhalten | `Account.getBookings()`, `Account.printStatement()` |
 
-### Bankmitarbeiter
-Der Bankmitarbeiter bearbeitet die Vorgänge des Kunden am Bankschalter.
+Die visuelle Modellierung des fachlichen Bankschalters ist im [Anwendungsfalldiagramm](use-case-diagram.puml) dokumentiert.
 
-Attribute:
-- name: String
-- mitarbeiterNr: int
-
-Methoden:
-- kontoEroeffnen()
-- einzahlungBuchen()
-- auszahlungBuchen()
-
-### Transaktion
-Eine Transaktion beschreibt eine Einzahlung oder Auszahlung auf einem Konto.
-
-Attribute:
-- betrag: double
-- datum: Date
-- typ: String
-
-Methoden:
-- ausfuehren()
-
-## Beziehungen
-
-- Ein Kunde besitzt ein oder mehrere Konten.
-- Ein Bankmitarbeiter bearbeitet Konten.
-- Ein Konto besitzt mehrere Transaktionen.
-
-## Klassendiagramm
-
-Das Klassendiagramm wurde mit draw.io erstellt.
+**Abgrenzung:** Kundendaten, Bankmitarbeiterverwaltung und ein physischer Ausdruck sind Anforderungen auf Szenarioebene, aber aktuell nicht implementiert. Die Beträge werden als `long` in Millirappen gespeichert, nicht als `double`.

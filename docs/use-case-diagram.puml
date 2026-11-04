@@ -1,0 +1,20 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+actor "Kundin / Kunde" as K
+actor "Bankmitarbeiter" as B
+rectangle "Bankschalter / Bankanwendung" {
+    usecase "UC-01\nKonto eröffnen" as UC1
+    usecase "UC-02\nEinzahlung tätigen" as UC2
+    usecase "UC-03\nAuszahlung tätigen" as UC3
+    usecase "UC-04\nKontoauszug erhalten" as UC4
+}
+K -- UC1
+K -- UC2
+K -- UC3
+K -- UC4
+B -- UC1
+B -- UC2
+B -- UC3
+B -- UC4
+@enduml

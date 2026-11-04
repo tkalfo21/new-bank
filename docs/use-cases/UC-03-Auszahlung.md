@@ -4,40 +4,49 @@
 Auszahlung tätigen
 
 ## Kurzbeschreibung
-Ein Kunde möchte Geld von seinem Konto auszahlen lassen.
+Eine Kundin oder ein Kunde hebt Geld von einem bestehenden Konto ab. Die Anwendung prüft die Regeln des jeweiligen Kontotyps.
 
 ## Akteure
-- Kunde
-- Bankmitarbeiter
+- Kundin / Kunde
+- Bankmitarbeiter (fachliche Rolle)
 
 ## Auslöser
-Der Kunde möchte Geld abheben.
+Die Kundin oder der Kunde verlangt eine Auszahlung.
 
 ## Ergebnisse
-Der gewünschte Betrag wurde ausgezahlt.
+Der Kontostand wird um den ausgezahlten Betrag vermindert und eine negative Buchung gespeichert.
 
 ## Vorbedingung
-Der Kunde besitzt ein Konto und hat genügend Guthaben.
+Das Konto existiert. Der gewünschte Betrag ist positiv.
 
 ## Nachbedingung
-Der Kontostand wurde um den Auszahlungsbetrag reduziert.
+Bei Erfolg ist die Auszahlung als negative Buchung gespeichert. Bei Ablehnung bleiben Saldo und Buchungsliste unverändert.
 
 ## Eingehende Daten
 - Kontonummer
-- Auszahlungsbetrag
+- Auszahlungsbetrag in Millirappen
+- Datum beziehungsweise aktueller Zeitpunkt
+- Optionaler Buchungstext
 
 ## Essenzieller Ablauf
-1. Kunde nennt sein Konto.
-2. Kunde nennt den gewünschten Betrag.
-3. Bankmitarbeiter prüft den Kontostand.
-4. Bankmitarbeiter verbucht die Auszahlung.
-5. Kunde erhält das Geld.
+1. Die Kontonummer wird erfasst.
+2. Die Kundin oder der Kunde nennt den Auszahlungsbetrag.
+3. Die Anwendung prüft Betrag, Datum und kontospezifische Regeln.
+4. Bei ausreichendem Guthaben oder erlaubtem Kredit wird die Auszahlung gebucht.
+5. Der neue Kontostand wird angezeigt.
+
+## Alternativ- und Fehlerabläufe
+- A1: Sparkonto: Ein Überzug wird abgewiesen.
+- A2: Lohnkonto: Die negative Kreditlimite darf nicht unterschritten werden.
+- A3: Jugendsparkonto: Die Summe der Auszahlungen im UTC-Kalendermonat darf CHF 200 nicht überschreiten.
+- A4: Betrag null/negativ, vergangenes Datum oder unbekannte Kontonummer: keine Buchung.
 
 ## Offene Punkte
-Was passiert, wenn nicht genügend Guthaben vorhanden ist?
+Eine physische Auszahlung von Bargeld wird von der Java-Anwendung nicht durchgeführt.
 
 ## Änderungshistorie
 - 16.09.2026: Erstellt
+- 04.11.2026: Kontoregeln und Fehlerabläufe ergänzt
 
 ## Sonstiges / Anmerkungen
-Keine.
+Tests: `BankUseCaseTests.auszahlung()`, `AccountBoundaryTests`.

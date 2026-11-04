@@ -4,40 +4,48 @@
 Konto eröffnen
 
 ## Kurzbeschreibung
-Ein Kunde möchte am Bankschalter ein neues Konto eröffnen.
+Eine Kundin oder ein Kunde möchte ein Bankkonto eröffnen. Die Anwendung legt ein Sparkonto, ein Jugendsparkonto oder ein Lohnkonto an und vergibt eine eindeutige Kontonummer.
 
 ## Akteure
-- Kunde
-- Bankmitarbeiter
+- Kundin / Kunde
+- Bankmitarbeiter (fachlicher Ablauf; im Java-Code nicht als eigene Klasse implementiert)
 
 ## Auslöser
-Der Kunde möchte ein neues Konto eröffnen.
+Die Kundin oder der Kunde beantragt ein Konto.
 
 ## Ergebnisse
-Ein neues Konto wurde erstellt.
+Ein neues Konto mit eindeutiger Nummer und Anfangssaldo null wird angelegt.
 
 ## Vorbedingung
-Der Kunde befindet sich am Bankschalter und gibt seine persönlichen Daten an.
+Die Kontoart ist festgelegt. Bei einem Lohnkonto ist eine gültige Kreditlimite bekannt.
 
 ## Nachbedingung
-Das Konto ist eröffnet und der Kunde erhält seine Kontodaten.
+Das Konto kann anhand seiner Nummer abgerufen werden.
 
 ## Eingehende Daten
-- Name
-- Adresse
-- Persönliche Daten des Kunden
+- Kontotyp (Sparkonto, Jugendsparkonto, Lohnkonto)
+- Optional beim Lohnkonto: Kreditlimite (null oder negativ)
+
+**Abgrenzung:** Name und Adresse der Kundin oder des Kunden werden in der aktuellen Java-Anwendung nicht gespeichert.
 
 ## Essenzieller Ablauf
-1. Kunde möchte ein Konto eröffnen.
-2. Bankmitarbeiter nimmt die Kundendaten auf.
-3. Bankmitarbeiter erstellt das Konto.
-4. Kunde erhält die Kontodaten.
+1. Die Kundin oder der Kunde nennt den gewünschten Kontotyp.
+2. Der Bankmitarbeiter veranlasst die Kontoeröffnung.
+3. Die Anwendung ruft die passende Methode der `AccountFactory` auf.
+4. Die Factory erzeugt das Konto und eine eindeutige Kontonummer.
+5. Die Bank registriert das Konto.
+6. Die Anwendung gibt die Kontonummer zurück.
+
+## Alternativ- und Fehlerabläufe
+- A1: Ein Lohnkonto wird mit einer positiven Kreditlimite angefordert. Die Anwendung lehnt die Eingabe ab.
+- A2: Bei einer ungültigen Kontoart wird kein Konto angelegt.
 
 ## Offene Punkte
-Keine.
+Kundenidentität, Legitimation und Vertragsunterzeichnung gehören zum realen Bankschalter, werden aber nicht umgesetzt.
 
 ## Änderungshistorie
 - 14.09.2026: Erstellt
+- 04.11.2026: An implementierte Kontotypen und Testfälle angepasst
 
 ## Sonstiges / Anmerkungen
-Keine.
+Tests: `BankUseCaseTests.kontenEroeffnen()`, `FactoryContractTests`.
