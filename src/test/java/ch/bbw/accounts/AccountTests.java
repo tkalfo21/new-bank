@@ -307,10 +307,21 @@ public class AccountTests {
     }
 
     @Test
-    @DisplayName(
-            "Print monthly account statement"
-    )
+    @DisplayName("Monatsauszug zeigt nur Buchungen des gewählten Monats")
     public void testMonthlyPrint() {
-        // Optionales Stretch Goal.
+        Account konto = new SavingsAccount("S-1000");
+        java.time.YearMonth monat = java.time.YearMonth.now(java.time.ZoneOffset.UTC);
+        long ersterTag = monat.atDay(1).atStartOfDay()
+                .toInstant(java.time.ZoneOffset.UTC).toEpochMilli();
+        long naechsterMonat = monat.plusMonths(1).atDay(1).atStartOfDay()
+                .toInstant(java.time.ZoneOffset.UTC).toEpochMilli();
+        konto.restoreBooking(new Booking(ersterTag, 3000, "Aktueller Monat"));
+        konto.restoreBooking(new Booking(naechsterMonat, 7000, "Anderer Monat"));
+
+        String auszug = konto.printStatement(monat.getYear(), monat.getMonthValue());
+        assertTrue(auszug.contains("Aktueller Monat"));
+        assertFalse(auszug.contains("Anderer Monat"));
+        assertTrue(auszug.contains("Monatssaldo: CHF 0.03000"));
+        assertEquals(10000, konto.getBalance());
     }
 }

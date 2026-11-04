@@ -38,5 +38,5 @@ Die GitHub-Actions-Workflowdatei `.github/workflows/tests.yml` führt Tests auto
 ## Grenzen
 
 - Das ursprüngliche Szenario beschreibt einen Kunden und einen Bankmitarbeiter am Schalter. Im Java-Code sind keine eigenen Kunden- oder Mitarbeiterklassen umgesetzt.
-- Der vorhandene `testMonthlyPrint()` ist kein vollständiger Test eines Monatsauszugs. Eine echte Monatssicht wäre eine zusätzliche Funktion.
+- Der Monatsauszug wird über `printStatement(year, month)` und `AccountTests.testMonthlyPrint()` geprüft.
 - Die Testabdeckung beweist nicht automatisch eine Note 6: Massgeblich ist die genaue Bewertungsrubrik der Lehrperson.

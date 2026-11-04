@@ -4,6 +4,8 @@ import ch.bbw.Scheduled;
 import ch.bbw.exceptions.InvalidAmountException;
 import ch.bbw.exceptions.InvalidDateException;
 import java.time.Instant;
+import java.time.YearMonth;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -46,6 +48,26 @@ public abstract class Account {
         if (booking == null || booking.amount() == 0)
             throw new IllegalArgumentException("Ungültige gespeicherte Buchung");
         bookings.add(booking);
+    }
+    /** Erstellt einen Kontoauszug für einen bestimmten UTC-Kalendermonat. */
+    public String printStatement(int year, int month) {
+        YearMonth selected = YearMonth.of(year, month);
+        StringBuilder statement = new StringBuilder("Konto: ")
+                .append(id).append(" | Monat: ").append(selected).append("\n");
+        long monatssaldo = 0;
+        for (Booking booking : bookings) {
+            if (YearMonth.from(Instant.ofEpochMilli(booking.date())
+                    .atZone(ZoneOffset.UTC)).equals(selected)) {
+                monatssaldo = Math.addExact(monatssaldo, booking.amount());
+                statement.append(Instant.ofEpochMilli(booking.date())).append(" | ")
+                        .append(String.format(Locale.ROOT, "CHF %.5f",
+                                booking.amount() / 100000.0))
+                        .append(" | ").append(booking.text()).append("\n");
+            }
+        }
+        return statement.append("Monatssaldo: ")
+                .append(String.format(Locale.ROOT, "CHF %.5f",
+                        monatssaldo / 100000.0)).toString();
     }
     public String printStatement() {
         StringBuilder statement = new StringBuilder("Konto: ").append(id).append("\n");

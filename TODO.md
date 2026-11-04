@@ -10,7 +10,7 @@ Stand: 19.10.2026. Die Änderungen liegen im Branch `complete-bank-exercises`.
 - [x] Kontostand aus Buchungssumme.
 - [x] Alte und neue Ein-/Auszahlungs-Signaturen.
 - [x] Kontoauszug, Unix-Millisekunden und Tests.
-- [ ] Optional: Monats-Kontoauszug als separate Funktion.
+- [x] Monats-Kontoauszug `printStatement(year, month)` samt eigenem Test.
 
 ## Sprint 3 – Kontounterklassen
 - [x] Sparkonto ohne Überzug.
