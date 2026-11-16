@@ -8,10 +8,13 @@ import org.springframework.http.HttpStatus;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BankControllerTests {
-    private BankController controller;
+    private AccountController controller;
+    private BankController bankController;
     @BeforeEach void setUp() {
         Bank.getInstance().resetForTests();
-        controller = new BankController(new BankService(Bank.getInstance()));
+        BankService service = new BankService(Bank.getInstance());
+        controller = new AccountController(service);
+        bankController = new BankController(service);
     }
     @Test void createDepositWithdrawAndGetBalance() throws Exception {
         IdResponse created = controller.createSavings();
@@ -46,6 +49,6 @@ class BankControllerTests {
         String zwei = controller.createSavings().id();
         controller.deposit(eins, new TransactionRequest(1000, null, "Erste"));
         controller.deposit(zwei, new TransactionRequest(2000, null, "Zweite"));
-        assertEquals(3000, controller.totalBalance().balance());
+        assertEquals(3000, bankController.totalBalance().balance());
     }
 }
