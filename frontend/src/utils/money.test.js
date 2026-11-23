@@ -20,4 +20,20 @@ describe('Geldbeträge und Bank-API-Einheiten', () => {
   it('formatiert Rückgabebeträge als CHF', () => {
     expect(formatCHF(100000)).toContain('1.00');
   });
+
+  it('verbietet den Einzahlungsbetrag null', () => {
+    expect(() => francsToInternal('0')).toThrow('grösser als 0');
+  });
+  it('erlaubt eine Kreditlimite von null', () => {
+    expect(francsToInternal('0', { allowNegative: true })).toBe(0);
+  });
+  it('verhindert eine positive Kreditlimite', () => {
+    expect(() => francsToInternal('20', { allowNegative: true })).toThrow();
+  });
+  it('verhindert zu grosse Zahlen ausserhalb der sicheren Ganzzahl', () => {
+    expect(() => francsToInternal('999999999999')).toThrow('zu gross');
+  });
+  it('zeigt negative Salden als CHF an', () => {
+    expect(formatCHF(-30000000)).toContain('300.00');
+  });
 });
