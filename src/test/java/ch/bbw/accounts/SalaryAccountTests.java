@@ -119,4 +119,14 @@ class SalaryAccountTests {
     
                 assertEquals(-500, account.getCreditLimit());
             }
+
+    @Test
+    void kreditlimiteFehlerZeigtFrankenStattMillirappen() throws Exception {
+        SalaryAccount konto = new SalaryAccount("P-3000", -50_000_000L);
+        InvalidAmountException fehler = assertThrows(InvalidAmountException.class,
+                () -> konto.withdraw(Scheduled.now(), 50_000_001L));
+        assertTrue(fehler.getMessage().contains("CHF -500.00"));
+        assertFalse(fehler.getMessage().contains("-50000000"));
+        assertEquals(0, konto.getBalance());
+    }
 }
